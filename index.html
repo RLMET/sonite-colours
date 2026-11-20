@@ -6,101 +6,93 @@
 <title>Sonite colour picker | Middle Earth Tiles</title>
 <meta name="robots" content="noindex">
 <style>
-  :root{
-    --olive:#464330; --green:#1C3A1E; --bright:#5C9D2F; --grey:#69685B;
-    --cream:#F5F7F0; --line:#DEDFD6; --white:#fff;
-  }
+  :root{--olive:#464330;--green:#1C3A1E;--bright:#5C9D2F;--grey:#69685B;--cream:#F5F7F0;--line:#DEDFD6;--white:#fff}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{font-family:Aptos,"Segoe UI",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:var(--olive);background:var(--white);line-height:1.45}
-  .wrap{max-width:1100px;margin:0 auto;padding:20px 16px 110px}
+  .wrap{max-width:1100px;margin:0 auto;padding:18px 16px 96px}
   h1{font-size:1.6rem;margin:0 0 6px;color:var(--green);font-weight:700}
-  .intro{margin:0 0 18px;color:var(--grey);font-size:1rem;max-width:640px}
-
-  /* filters */
-  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
-  .chip{border:1px solid var(--line);background:var(--white);color:var(--olive);padding:8px 14px;border-radius:999px;font:inherit;font-size:.95rem;cursor:pointer}
+  .intro{margin:0 0 16px;color:var(--grey);font-size:1rem;max-width:660px}
+  .label{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--grey);margin:0 0 6px}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+  .chip{border:1px solid var(--line);background:var(--white);color:var(--olive);padding:7px 13px;border-radius:999px;font:inherit;font-size:.92rem;cursor:pointer}
   .chip[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:var(--white)}
-
-  /* selection */
-  .selection{display:none;background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:16px;margin:0 0 22px}
-  .selection.show{display:block}
-  .selection h2{font-size:1.15rem;margin:0 0 4px;color:var(--green)}
-  .selection .hint{margin:0 0 12px;color:var(--grey);font-size:.92rem}
-  .compare{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-  .slot{position:relative;background:var(--white);border:1px solid var(--line);border-radius:8px;padding:6px}
-  .slot img{width:100%;height:auto;display:block;border-radius:4px;cursor:zoom-in}
-  .slot .remove{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--white);color:var(--olive);font-size:18px;line-height:28px;cursor:pointer}
-  .slot.empty{display:flex;align-items:center;justify-content:center;min-height:120px;color:var(--grey);font-size:.9rem;text-align:center;background:transparent;border-style:dashed}
-  .actions{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-  .btn{display:inline-block;background:var(--bright);color:var(--white);border:0;border-radius:6px;padding:12px 18px;font:inherit;font-weight:600;font-size:1rem;cursor:pointer;text-decoration:none}
-  .btn.secondary{background:var(--white);color:var(--olive);border:1px solid var(--line);font-weight:500}
-
-  /* grid */
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
-  .card{position:relative;background:var(--white);border:1px solid var(--line);border-radius:8px;padding:6px;cursor:pointer;transition:box-shadow .15s}
+  .chip .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:1px solid rgba(0,0,0,.15)}
+  .search{display:flex;gap:10px;align-items:center;margin:0 0 14px;flex-wrap:wrap}
+  .search input{flex:1 1 220px;max-width:340px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:1rem;color:var(--olive)}
+  .count{color:var(--grey);font-size:.92rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+  .card{position:relative;background:var(--white);border:1px solid var(--line);border-radius:8px;padding:5px;cursor:pointer}
   .card:hover{box-shadow:0 2px 10px rgba(0,0,0,.08)}
-  .card img{width:100%;height:auto;display:block;border-radius:4px}
-  .card .tag{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.92);font-size:.75rem;padding:2px 8px;border-radius:999px;color:var(--grey)}
+  .card img{width:100%;aspect-ratio:240/296;height:auto;display:block;border-radius:4px;background:var(--cream)}
+  .card .tag{position:absolute;top:9px;left:9px;background:rgba(255,255,255,.92);font-size:.72rem;padding:2px 7px;border-radius:999px;color:var(--grey)}
   .card.picked{outline:3px solid var(--bright);outline-offset:-1px}
-  .card .tick{display:none;position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:var(--bright);color:#fff;text-align:center;line-height:28px;font-weight:700}
+  .card .tick{display:none;position:absolute;top:7px;right:7px;width:26px;height:26px;border-radius:50%;background:var(--bright);color:#fff;text-align:center;line-height:26px;font-weight:700}
   .card.picked .tick{display:block}
-
-  .note{margin:26px 0 0;color:var(--grey);font-size:.88rem}
-
-  /* bottom bar */
-  .bar{position:fixed;left:0;right:0;bottom:0;background:var(--green);color:var(--white);padding:12px 16px;display:none;align-items:center;justify-content:space-between;gap:10px;z-index:20}
+  .empty{color:var(--grey);padding:30px 0}
+  .note{margin:24px 0 0;color:var(--grey);font-size:.88rem}
+  .btn{display:inline-block;background:var(--bright);color:var(--white);border:0;border-radius:6px;padding:12px 18px;font:inherit;font-weight:600;font-size:1rem;cursor:pointer;text-decoration:none;text-align:center}
+  .btn.secondary{background:var(--white);color:var(--olive);border:1px solid var(--line);font-weight:500}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:var(--green);color:var(--white);padding:10px 16px;display:none;align-items:center;justify-content:space-between;gap:10px;z-index:20}
   .bar.show{display:flex}
   .bar .btn{background:var(--white);color:var(--green);padding:10px 14px}
-
-  /* large view */
-  .viewer{position:fixed;inset:0;background:rgba(28,58,30,.88);display:none;align-items:center;justify-content:center;z-index:30;padding:16px}
-  .viewer.show{display:flex}
-  .panel{background:var(--white);border-radius:10px;max-width:560px;width:100%;max-height:100%;overflow:auto;padding:14px}
-  .zoombox{overflow:auto;border-radius:6px;background:var(--white);max-height:70vh}
+  .overlay{position:fixed;inset:0;background:rgba(28,58,30,.88);display:none;align-items:center;justify-content:center;z-index:30;padding:12px}
+  .overlay.show{display:flex}
+  .panel{background:var(--white);border-radius:10px;width:100%;max-height:100%;overflow:auto;padding:14px}
+  .panel.small{max-width:560px}
+  .panel.wide{max-width:1000px}
+  .panel h2{font-size:1.2rem;margin:0 0 4px;color:var(--green)}
+  .panel .hint{margin:0 0 12px;color:var(--grey);font-size:.92rem}
+  .zoombox{overflow:auto;border-radius:6px;max-height:68vh}
   .zoombox img{display:block;width:100%;height:auto;cursor:zoom-in}
   .zoombox.zoomed img{width:200%;max-width:none;cursor:zoom-out}
-  .panel .meta{margin:10px 0 0;font-size:1.05rem}
-  .panel .meta b{color:var(--green)}
-  .panel .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  .meta{margin:10px 0 0;font-size:1.05rem}
+  .meta b{color:var(--green)}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
   .msg{margin:10px 0 0;color:#8a5a00;font-size:.92rem;min-height:1.2em}
-
+  .compare{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .slot{position:relative;border:1px solid var(--line);border-radius:8px;padding:6px;background:var(--white)}
+  .slot img{width:100%;height:auto;display:block;border-radius:4px}
+  .slot .remove{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--white);color:var(--olive);font-size:18px;line-height:28px;cursor:pointer}
+  .copybox{display:none;width:100%;margin-top:10px;font:inherit;font-size:.9rem;padding:8px;border:1px solid var(--line);border-radius:6px;min-height:110px}
+  .copybox.show{display:block}
   @media (max-width:640px){
-    h1{font-size:1.35rem}
-    .compare{grid-template-columns:repeat(2,1fr)}
-    .grid{grid-template-columns:repeat(2,1fr);gap:10px}
+    h1{font-size:1.3rem}
+    .grid{grid-template-columns:repeat(3,1fr);gap:8px}
+    .card .tag{display:none}
+    .compare{grid-template-columns:repeat(2,1fr);gap:8px}
   }
+  @media (max-width:380px){.grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Choose your Sonite colours</h1>
-  <p class="intro">Tap a colour to see it larger. Add up to four to see them side by side, then ask us for samples of the ones you like.</p>
+  <p class="intro">407 mosaic colours. Tap a colour to see it larger, choose up to four to compare side by side, then ask us for samples.</p>
 
-  <div class="filters" id="filters" role="group" aria-label="Show collection"></div>
+  <p class="label">Collection</p>
+  <div class="filters" id="collections" role="group" aria-label="Collection"></div>
+  <p class="label">Colour</p>
+  <div class="filters" id="families" role="group" aria-label="Colour"></div>
 
-  <section class="selection" id="selection" aria-live="polite">
-    <h2>Your colours, side by side</h2>
-    <p class="hint">Tap a colour to see it larger. Use the cross to remove it.</p>
-    <div class="compare" id="compare"></div>
-    <div class="actions">
-      <a class="btn" id="request" href="#">Request samples of these colours</a>
-      <button class="btn secondary" id="clear" type="button">Clear selection</button>
-    </div>
-  </section>
+  <div class="search">
+    <input id="q" type="search" placeholder="Search by code or name, e.g. 11S-132 or Dawn" aria-label="Search by code or name">
+    <span class="count" id="count"></span>
+  </div>
 
   <div class="grid" id="grid"></div>
+  <p class="empty" id="empty" hidden>No colours match. Try another colour or clear the search.</p>
 
   <p class="note">Colours are photographs of real samples and are a guide only. Screens vary, so please ask us for a physical sample before you choose.</p>
 </div>
 
 <div class="bar" id="bar">
   <span id="barText"></span>
-  <button class="btn" id="barGo" type="button">See side by side</button>
+  <button class="btn" id="barGo" type="button">Compare side by side</button>
 </div>
 
-<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Colour detail">
-  <div class="panel">
+<div class="overlay" id="viewer" role="dialog" aria-modal="true" aria-label="Colour detail">
+  <div class="panel small">
     <div class="zoombox" id="zoombox"><img id="bigImg" alt=""></div>
     <p class="meta" id="bigMeta"></p>
     <div class="row">
@@ -112,141 +104,154 @@
   </div>
 </div>
 
+<div class="overlay" id="cmp" role="dialog" aria-modal="true" aria-label="Your colours side by side">
+  <div class="panel wide">
+    <h2>Your colours, side by side</h2>
+    <p class="hint">Tap a colour to see it larger. Use the cross to remove it.</p>
+    <div class="compare" id="compare"></div>
+    <div class="row">
+      <a class="btn" id="request" href="#">Request samples of these colours</a>
+      <button class="btn secondary" id="copy" type="button">Copy my list</button>
+      <button class="btn secondary" id="cmpMore" type="button">Choose more</button>
+      <button class="btn secondary" id="clear" type="button">Clear all</button>
+    </div>
+    <p class="msg" id="cmpMsg"></p>
+    <textarea class="copybox" id="copybox" readonly aria-label="Your colour list"></textarea>
+  </div>
+</div>
+
 <script>
 (function(){
-  var EMAIL = "sales@middleearthtiles.co.nz";
-  var MAX = 4;
-  var COLOURS = [
-    {"series":"Prime","code":"11S-132","name":"Dawn","file":"sonite-prime-11s-132-dawn.jpg"},
-    {"series":"Prime","code":"61S-321","name":"Gerenium","file":"sonite-prime-61s-321-gerenium.jpg"},
-    {"series":"Lite","code":"TLS-541","name":"Fresh Water","file":"sonite-lite-tls-541-fresh-water.jpg"},
-    {"series":"Lite","code":"MLS-966","name":"Shiny Black","file":"sonite-lite-mls-966-shiny-black.jpg"},
-    {"series":"Pool","code":"61S-50P","name":"Miami Blue","file":"sonite-pool-61s-50p-miami-blue.jpg"},
-    {"series":"Lite Husk","code":"839","name":"Walnut","file":"sonite-lite-husk-839-walnut.jpg"}
-  ];
-  var COLLECTIONS = ["All","Prime","Lite","Lite Husk","Pool"];
+  var EMAIL="sales@middleearthtiles.co.nz", MAX=4;
+  var RAW=[["Lite","TLS-071","Moonlight","Whites and creams","sonite-lite-tls-071-moonlight.jpg"],["Lite","TCS-071","Moonlight","Whites and creams","sonite-lite-tcs-071-moonlight.jpg"],["Lite","TVS-071","Ethereal White","Whites and creams","sonite-lite-tvs-071-ethereal-white.jpg"],["Lite","TLS-619","Orchid Hush","Whites and creams","sonite-lite-tls-619-orchid-hush.jpg"],["Lite","TVS-619","Snow Fall","Whites and creams","sonite-lite-tvs-619-snow-fall.jpg"],["Lite","NLS-041","Shoji White","Whites and creams","sonite-lite-nls-041-shoji-white.jpg"],["Lite","QLS-041","Calcite","Whites and creams","sonite-lite-qls-041-calcite.jpg"],["Lite","QLM-041","Calcite","Whites and creams","sonite-lite-qlm-041-calcite.jpg"],["Lite","BLS-102","Pristine","Whites and creams","sonite-lite-bls-102-pristine.jpg"],["Lite","MLS-855","Renwick Olive","Golds and yellows","sonite-lite-mls-855-renwick-olive.jpg"],["Lite","MVS-829","Ecru","Golds and yellows","sonite-lite-mvs-829-ecru.jpg"],["Lite","MLS-829","Whole Wheat","Golds and yellows","sonite-lite-mls-829-whole-wheat.jpg"],["Lite","NLS-810","Restrained Gold","Golds and yellows","sonite-lite-nls-810-restrained-gold.jpg"],["Lite","MLS-800","Galaxy Gold","Golds and yellows","sonite-lite-mls-800-galaxy-gold.jpg"],["Lite","MVS-800","Auric","Golds and yellows","sonite-lite-mvs-800-auric.jpg"],["Lite","TLS-125","Golden Nectar","Golds and yellows","sonite-lite-tls-125-golden-nectar.jpg"],["Lite","MLS-812","Burlap","Golds and yellows","sonite-lite-mls-812-burlap.jpg"],["Lite","TLS-119","White Beach","Whites and creams","sonite-lite-tls-119-white-beach.jpg"],["Lite","TVS-119","Navajo White","Whites and creams","sonite-lite-tvs-119-navajo-white.jpg"],["Lite","QLM-100","Icy Tale","Whites and creams","sonite-lite-qlm-100-icy-tale.jpg"],["Lite","TLS-108","Verona Beach","Whites and creams","sonite-lite-tls-108-verona-beach.jpg"],["Lite","QLM-813","White Mica","Whites and creams","sonite-lite-qlm-813-white-mica.jpg"],["Lite","TVS-824","Bagel","Golds and yellows","sonite-lite-tvs-824-bagel.jpg"],["Lite","TLS-824","Terracotta sand","Golds and yellows","sonite-lite-tls-824-terracotta-sand.jpg"],["Lite","BLS-809","Chipmunk","Golds and yellows","sonite-lite-bls-809-chipmunk.jpg"],["Lite","NLS-802","Golden Beach","Greys and silvers","sonite-lite-nls-802-golden-beach.jpg"],["Lite","MVS-812","Renwick Gloden Oka","Browns and bronzes","sonite-lite-mvs-812-renwick-gloden-oka.jpg"],["Lite","MVS-811","Hopsack","Greys and silvers","sonite-lite-mvs-811-hopsack.jpg"],["Lite","MLS-811","Latte","Greys and silvers","sonite-lite-mls-811-latte.jpg"],["Lite","QLM-800","Sandstone","Greys and silvers","sonite-lite-qlm-800-sandstone.jpg"],["Lite","TLS-800","Craff Paper","Browns and bronzes","sonite-lite-tls-800-craff-paper.jpg"],["Lite","TLS-825","Coconut Husk","Browns and bronzes","sonite-lite-tls-825-coconut-husk.jpg"],["Lite","TVS-825","Toasty","Golds and yellows","sonite-lite-tvs-825-toasty.jpg"],["Lite","TVS-809","Tea Chest","Browns and bronzes","sonite-lite-tvs-809-tea-chest.jpg"],["Lite","MVS-814","Brevity Brown","Golds and yellows","sonite-lite-mvs-814-brevity-brown.jpg"],["Lite","MLS-814","Champagne Toast","Golds and yellows","sonite-lite-mls-814-champagne-toast.jpg"],["Lite","TLS-809","Sturdy Brown","Browns and bronzes","sonite-lite-tls-809-sturdy-brown.jpg"],["Lite","TCS-819","Hickory","Browns and bronzes","sonite-lite-tcs-819-hickory.jpg"],["Lite","BLS-807","Bison","Browns and bronzes","sonite-lite-bls-807-bison.jpg"],["Lite","TLS-804","Wild Mustang","Browns and bronzes","sonite-lite-tls-804-wild-mustang.jpg"],["Lite","QLM-883","Burnished Bronze","Browns and bronzes","sonite-lite-qlm-883-burnished-bronze.jpg"],["Lite","TLS-816","Turkish Coffee","Blacks","sonite-lite-tls-816-turkish-coffee.jpg"],["Lite","MLS-820","Sable","Browns and bronzes","sonite-lite-mls-820-sable.jpg"],["Lite","MVS-820","Well Bred Brown","Browns and bronzes","sonite-lite-mvs-820-well-bred-brown.jpg"],["Lite","NLS-883","Pelican Brown","Browns and bronzes","sonite-lite-nls-883-pelican-brown.jpg"],["Lite","BLS-806","Peat","Browns and bronzes","sonite-lite-bls-806-peat.jpg"],["Lite","TCS-907","Chateau","Greys and silvers","sonite-lite-tcs-907-chateau.jpg"],["Lite","TVS-907","Black Fox","Greys and silvers","sonite-lite-tvs-907-black-fox.jpg"],["Lite","TLS-908","Gray Pearl","Greys and silvers","sonite-lite-tls-908-gray-pearl.jpg"],["Lite","TLS-827","Fall Foliase","Browns and bronzes","sonite-lite-tls-827-fall-foliase.jpg"],["Lite","SLS-317","Carmine","Reds, oranges and pinks","sonite-lite-sls-317-carmine.jpg"],["Lite","SLS-333","Hot Jazz","Reds, oranges and pinks","sonite-lite-sls-333-hot-jazz.jpg"],["Lite","SLS-805","Rich Mocca","Browns and bronzes","sonite-lite-sls-805-rich-mocca.jpg"],["Lite","MLS-819","Desert Spice","Browns and bronzes","sonite-lite-mls-819-desert-spice.jpg"],["Lite","SLS-363","Harvest Pumpkin","Reds, oranges and pinks","sonite-lite-sls-363-harvest-pumpkin.jpg"],["Lite","TCS-386","Scarlet","Reds, oranges and pinks","sonite-lite-tcs-386-scarlet.jpg"],["Lite","QLM-362","Garnet","Reds, oranges and pinks","sonite-lite-qlm-362-garnet.jpg"],["Lite","BLS-601","Imperial Jasper","Purples","sonite-lite-bls-601-imperial-jasper.jpg"],["Lite","SLS-656","Primitive Plum","Purples","sonite-lite-sls-656-primitive-plum.jpg"],["Lite","TLS-210","Autumn Bloom","Reds, oranges and pinks","sonite-lite-tls-210-autumn-bloom.jpg"],["Lite","TVS-901","Best Bronze","Greys and silvers","sonite-lite-tvs-901-best-bronze.jpg"],["Lite","TVS-905","Dorian Gray","Greys and silvers","sonite-lite-tvs-905-dorian-gray.jpg"],["Lite","TCS-905","Silver Bullet","Greys and silvers","sonite-lite-tcs-905-silver-bullet.jpg"],["Lite","TLS-905","Silver Bullet","Greys and silvers","sonite-lite-tls-905-silver-bullet.jpg"],["Lite","MLS-938","mega greige","Greys and silvers","sonite-lite-mls-938-mega-greige.jpg"],["Lite","MLS-946","Silver Gray","Greys and silvers","sonite-lite-mls-946-silver-gray.jpg"],["Lite","MVS-946","Caviar","Greys and silvers","sonite-lite-mvs-946-caviar.jpg"],["Lite","NLS-900","Silver","Greys and silvers","sonite-lite-nls-900-silver.jpg"],["Lite","MVS-938","Gauntlet Gray","Greys and silvers","sonite-lite-mvs-938-gauntlet-gray.jpg"],["Lite","BLS-957","Dark Shadow","Greys and silvers","sonite-lite-bls-957-dark-shadow.jpg"],["Lite","TCS-904","Fossil","Greys and silvers","sonite-lite-tcs-904-fossil.jpg"],["Lite","MLS-924","Moon Rock","Greys and silvers","sonite-lite-mls-924-moon-rock.jpg"],["Lite","MVS-924","Iron Ore","Greys and silvers","sonite-lite-mvs-924-iron-ore.jpg"],["Lite","NLS-994","Dolphin Gray","Greys and silvers","sonite-lite-nls-994-dolphin-gray.jpg"],["Lite","QLM-911","Anchor Gray","Greys and silvers","sonite-lite-qlm-911-anchor-gray.jpg"],["Lite","MLS-966","Shiny Black","Blacks","sonite-lite-mls-966-shiny-black.jpg"],["Lite","NLS-966","Urbane Bronze","Greys and silvers","sonite-lite-nls-966-urbane-bronze.jpg"],["Lite","MVS-966","Black Magic","Blacks","sonite-lite-mvs-966-black-magic.jpg"],["Lite","TVS-909","Black Of Night","Blacks","sonite-lite-tvs-909-black-of-night.jpg"],["Lite","TLS-909","Blackjack","Greys and silvers","sonite-lite-tls-909-blackjack.jpg"],["Lite","NLS-997","Squid Ink","Blacks","sonite-lite-nls-997-squid-ink.jpg"],["Lite","TLS-967","Carviar","Blacks","sonite-lite-tls-967-carviar.jpg"],["Lite","QLS-997","Onyx","Blacks","sonite-lite-qls-997-onyx.jpg"],["Lite","QLM-997","Onyx","Blacks","sonite-lite-qlm-997-onyx.jpg"],["Lite","BLS-906","Phantom","Blacks","sonite-lite-bls-906-phantom.jpg"],["Lite","TLS-500","Wonderous Blue","Blues","sonite-lite-tls-500-wonderous-blue.jpg"],["Lite","TLS-507","Fly Way","Blues","sonite-lite-tls-507-fly-way.jpg"],["Lite","TLS-501","Resonant Blue","Blues","sonite-lite-tls-501-resonant-blue.jpg"],["Lite","TVS-708","Secure Blue","Blues","sonite-lite-tvs-708-secure-blue.jpg"],["Lite","TLS-708","Lake Placid","Blues","sonite-lite-tls-708-lake-placid.jpg"],["Lite","BLS-701","Skipper Blue","Blues","sonite-lite-bls-701-skipper-blue.jpg"],["Lite","TLS-723","Blue Tlate","Blues","sonite-lite-tls-723-blue-tlate.jpg"],["Lite","SLS-777","Blue Blood","Blues","sonite-lite-sls-777-blue-blood.jpg"],["Lite","SLS-702","Nautical","Blues","sonite-lite-sls-702-nautical.jpg"],["Lite","NLS-776","Pacific Blue","Blues","sonite-lite-nls-776-pacific-blue.jpg"],["Lite","TCS-799","Aegean","Blues","sonite-lite-tcs-799-aegean.jpg"],["Lite","TLS-703","Dignity Blue","Blues","sonite-lite-tls-703-dignity-blue.jpg"],["Lite","TCS-719","Vivid Blue","Blues","sonite-lite-tcs-719-vivid-blue.jpg"],["Lite","QLM-799","Onyx","Blues","sonite-lite-qlm-799-onyx.jpg"],["Lite","QLM-719","Cobalt","Blues","sonite-lite-qlm-719-cobalt.jpg"],["Lite","TCS-759","Blue Streak","Blues","sonite-lite-tcs-759-blue-streak.jpg"],["Lite","BLS-505","Nigara","Blues","sonite-lite-bls-505-nigara.jpg"],["Lite","TVS-502","Aqueduct","Greens and teals","sonite-lite-tvs-502-aqueduct.jpg"],["Lite","TLS-415","Larchmere","Greens and teals","sonite-lite-tls-415-larchmere.jpg"],["Lite","TLS-541","Fresh Water","Blues","sonite-lite-tls-541-fresh-water.jpg"],["Lite","TLS-902","Wool Skein","Whites and creams","sonite-lite-tls-902-wool-skein.jpg"],["Lite","TVS-423","Ryegrass","Greens and teals","sonite-lite-tvs-423-ryegrass.jpg"],["Lite","BLS-400","Jadeite","Greens and teals","sonite-lite-bls-400-jadeite.jpg"],["Lite","TLS-418","Mossy","Greens and teals","sonite-lite-tls-418-mossy.jpg"],["Lite","TLS-502","Hazel","Greens and teals","sonite-lite-tls-502-hazel.jpg"],["Lite","TCS-438","Palm Oyster","Greys and silvers","sonite-lite-tcs-438-palm-oyster.jpg"],["Lite","TCS-409","Pier Gray","Greys and silvers","sonite-lite-tcs-409-pier-gray.jpg"],["Lite","TLS-435","Armored Steel","Greys and silvers","sonite-lite-tls-435-armored-steel.jpg"],["Lite","TLS-428","Hidden Forest","Greens and teals","sonite-lite-tls-428-hidden-forest.jpg"],["Lite","TLS-414","Jolly Green","Greens and teals","sonite-lite-tls-414-jolly-green.jpg"],["Lite","TLS-419","Cilantro","Greens and teals","sonite-lite-tls-419-cilantro.jpg"],["Lite","SLS-430","Alpine Green","Greens and teals","sonite-lite-sls-430-alpine-green.jpg"],["Lite","SLS-742","Pulsating Blue","Blues","sonite-lite-sls-742-pulsating-blue.jpg"],["Lite","NLS-449","Green Wave","Greens and teals","sonite-lite-nls-449-green-wave.jpg"],["Lite","BLS-404","Dark Slate","Blacks","sonite-lite-bls-404-dark-slate.jpg"],["Lite Husk","017","Dune","Whites and creams","sonite-lite-husk-017-dune.jpg"],["Lite Husk","800","Cornsilk","Golds and yellows","sonite-lite-husk-800-cornsilk.jpg"],["Lite Husk","839","Walnut","Browns and bronzes","sonite-lite-husk-839-walnut.jpg"],["Lite Husk","900","Ash","Greys and silvers","sonite-lite-husk-900-ash.jpg"],["Lite Husk","910","Shadow Oak","Greys and silvers","sonite-lite-husk-910-shadow-oak.jpg"],["Lite Husk","999","Charcoal","Blacks","sonite-lite-husk-999-charcoal.jpg"],["Pool","42S-76P","Blue Ashes","Blues","sonite-pool-42s-76p-blue-ashes.jpg"],["Pool","42S-73P","Stellar","Blues","sonite-pool-42s-73p-stellar.jpg"],["Pool","42S-74P","Majolica Blue","Blues","sonite-pool-42s-74p-majolica-blue.jpg"],["Pool","TCS-79P","Blue Streak","Blues","sonite-pool-tcs-79p-blue-streak.jpg"],["Pool","TLS-95P","Silver Bullet","Greys and silvers","sonite-pool-tls-95p-silver-bullet.jpg"],["Pool","MLS-94P","Moon Rock","Greys and silvers","sonite-pool-mls-94p-moon-rock.jpg"],["Pool","TLS-99P","Blackjack","Blacks","sonite-pool-tls-99p-blackjack.jpg"],["Pool","QLS-91P","Anchor Gray","Blacks","sonite-pool-qls-91p-anchor-gray.jpg"],["Pool","MLS-96P","Shiny Black","Blacks","sonite-pool-mls-96p-shiny-black.jpg"],["Pool","QLS-97P","Onyx","Blacks","sonite-pool-qls-97p-onyx.jpg"],["Pool","12S-40P","June Bug","Greens and teals","sonite-pool-12s-40p-june-bug.jpg"],["Pool","SLS-40P","Alpine Green","Greens and teals","sonite-pool-sls-40p-alpine-green.jpg"],["Pool","60S-49P","Paua","Greens and teals","sonite-pool-60s-49p-paua.jpg"],["Pool","12S-49P","Greener Pastures","Greens and teals","sonite-pool-12s-49p-greener-pastures.jpg"],["Pool","11S-44P","Jolly Green","Greens and teals","sonite-pool-11s-44p-jolly-green.jpg"],["Pool","11S-40P","Four Leaf Clover","Greens and teals","sonite-pool-11s-40p-four-leaf-clover.jpg"],["Pool","11S-49P","Wild Lime","Greens and teals","sonite-pool-11s-49p-wild-lime.jpg"],["Pool","11S-46P","White Jade","Greens and teals","sonite-pool-11s-46p-white-jade.jpg"],["Pool","11S-45P","Sweet Garden","Greens and teals","sonite-pool-11s-45p-sweet-garden.jpg"],["Pool","TLS-45P","Larchmere","Greens and teals","sonite-pool-tls-45p-larchmere.jpg"],["Pool","11S-54P","Riviera","Blues","sonite-pool-11s-54p-riviera.jpg"],["Pool","TLS-50P","Wonderous Blue","Blues","sonite-pool-tls-50p-wonderous-blue.jpg"],["Pool","61S-70P","Walker Lake","Blues","sonite-pool-61s-70p-walker-lake.jpg"],["Pool","61S-50P","Miami Blue","Blues","sonite-pool-61s-50p-miami-blue.jpg"],["Pool","61S-57P","Olympic Blue","Blues","sonite-pool-61s-57p-olympic-blue.jpg"],["Pool","TLS-54P","Fresh Water","Blues","sonite-pool-tls-54p-fresh-water.jpg"],["Pool","TLS-57P","Fly Way","Blues","sonite-pool-tls-57p-fly-way.jpg"],["Pool","TLS-51P","Resonant Blue","Blues","sonite-pool-tls-51p-resonant-blue.jpg"],["Pool","11S-57P","Sanctuary Spa","Blues","sonite-pool-11s-57p-sanctuary-spa.jpg"],["Pool","11S-50P","Splish Splash","Blues","sonite-pool-11s-50p-splish-splash.jpg"],["Pool","TLS-73P","Blue Tlate","Blues","sonite-pool-tls-73p-blue-tlate.jpg"],["Pool","11S-73P","Deep Sapphire","Blues","sonite-pool-11s-73p-deep-sapphire.jpg"],["Pool","SLS-77P","Blue Blood","Blues","sonite-pool-sls-77p-blue-blood.jpg"],["Pool","60S-54P","City Night","Blues","sonite-pool-60s-54p-city-night.jpg"],["Pool","60S-74P","Peacock Plum","Blues","sonite-pool-60s-74p-peacock-plum.jpg"],["Pool","61S-75P","The Blue","Blues","sonite-pool-61s-75p-the-blue.jpg"],["Pool","61S-77P","Lapis","Blues","sonite-pool-61s-77p-lapis.jpg"],["Pool","61S-54P","Shadow Blue","Blues","sonite-pool-61s-54p-shadow-blue.jpg"],["Pool","12S-72P","Corsair","Blues","sonite-pool-12s-72p-corsair.jpg"],["Pool","12S-70P","Federal Blue","Blues","sonite-pool-12s-70p-federal-blue.jpg"],["Pool","BLS-71P","Skipper Blue","Blues","sonite-pool-bls-71p-skipper-blue.jpg"],["Prime","1LS-619","Porpoise","Whites and creams","sonite-prime-1ls-619-porpoise.jpg"],["Prime","60S-023","Capiz","Whites and creams","sonite-prime-60s-023-capiz.jpg"],["Prime","11S-505","Illusion Blue","Whites and creams","sonite-prime-11s-505-illusion-blue.jpg"],["Prime","42S-053","Lily White","Whites and creams","sonite-prime-42s-053-lily-white.jpg"],["Prime","1LS-071","Phantom Green","Whites and creams","sonite-prime-1ls-071-phantom-green.jpg"],["Prime","1LS-070","Watermist","Whites and creams","sonite-prime-1ls-070-watermist.jpg"],["Prime","11S-070","White Sand","Whites and creams","sonite-prime-11s-070-white-sand.jpg"],["Prime","11S-071","Phantom Green","Whites and creams","sonite-prime-11s-071-phantom-green.jpg"],["Prime","11S-424","Milk Green","Greens and teals","sonite-prime-11s-424-milk-green.jpg"],["Prime","1LS-443","Glass Tile","Greens and teals","sonite-prime-1ls-443-glass-tile.jpg"],["Prime","11S-111","Marshmallow","Whites and creams","sonite-prime-11s-111-marshmallow.jpg"],["Prime","60S-100","Light Yellowlip","Whites and creams","sonite-prime-60s-100-light-yellowlip.jpg"],["Prime","11S-100","Iced Lemon","Whites and creams","sonite-prime-11s-100-iced-lemon.jpg"],["Prime","11S-109","Pastel Yellow","Golds and yellows","sonite-prime-11s-109-pastel-yellow.jpg"],["Prime","42S-123","Ochre","Golds and yellows","sonite-prime-42s-123-ochre.jpg"],["Prime","61S-141","Almond Oil","Golds and yellows","sonite-prime-61s-141-almond-oil.jpg"],["Prime","61S-140","Snapdragon","Golds and yellows","sonite-prime-61s-140-snapdragon.jpg"],["Prime","61S-150","Daffodil","Golds and yellows","sonite-prime-61s-150-daffodil.jpg"],["Prime","60S-814","Hawailan Honey","Golds and yellows","sonite-prime-60s-814-hawailan-honey.jpg"],["Prime","11S-125","Spruce","Golds and yellows","sonite-prime-11s-125-spruce.jpg"],["Prime","60S-816","Botanica Gold","Blues","sonite-prime-60s-816-botanica-gold.jpg"],["Prime","20S-800","Rich Gold","Golds and yellows","sonite-prime-20s-800-rich-gold.jpg"],["Prime","21S-800","Rich Gold","Golds and yellows","sonite-prime-21s-800-rich-gold.jpg"],["Prime","2LS-800","Rich Gold","Golds and yellows","sonite-prime-2ls-800-rich-gold.jpg"],["Prime","2LS-829","Honey Gold","Golds and yellows","sonite-prime-2ls-829-honey-gold.jpg"],["Prime","20S-829","Honey Gold","Golds and yellows","sonite-prime-20s-829-honey-gold.jpg"],["Prime","21S-829","Honey Gold","Golds and yellows","sonite-prime-21s-829-honey-gold.jpg"],["Prime","2LS-855","Castle Wall","Golds and yellows","sonite-prime-2ls-855-castle-wall.jpg"],["Prime","20S-855","Castle Wall","Greys and silvers","sonite-prime-20s-855-castle-wall.jpg"],["Prime","21S-855","Castle Wall","Greys and silvers","sonite-prime-21s-855-castle-wall.jpg"],["Prime","11S-132","Dawn","Whites and creams","sonite-prime-11s-132-dawn.jpg"],["Prime","1LS-119","Golden Fleece","Golds and yellows","sonite-prime-1ls-119-golden-fleece.jpg"],["Prime","60S-101","Yellowlip","Golds and yellows","sonite-prime-60s-101-yellowlip.jpg"],["Prime","11S-119","Golden Fleece","Golds and yellows","sonite-prime-11s-119-golden-fleece.jpg"],["Prime","11S-108","Autumn Blonde","Golds and yellows","sonite-prime-11s-108-autumn-blonde.jpg"],["Prime","42S-873","Frozen Dew","Golds and yellows","sonite-prime-42s-873-frozen-dew.jpg"],["Prime","11S-824","Marzipan","Golds and yellows","sonite-prime-11s-824-marzipan.jpg"],["Prime","60S-811","Natural Mop","Golds and yellows","sonite-prime-60s-811-natural-mop.jpg"],["Prime","60S-103","Goldlip","Golds and yellows","sonite-prime-60s-103-goldlip.jpg"],["Prime","11S-826","Sheepskin","Golds and yellows","sonite-prime-11s-826-sheepskin.jpg"],["Prime","1LS-824","Marzipan","Golds and yellows","sonite-prime-1ls-824-marzipan.jpg"],["Prime","2LS-886","Champagne Beige","Golds and yellows","sonite-prime-2ls-886-champagne-beige.jpg"],["Prime","21S-886","Champagne Beige","Golds and yellows","sonite-prime-21s-886-champagne-beige.jpg"],["Prime","20S-886","Champagne Beige","Golds and yellows","sonite-prime-20s-886-champagne-beige.jpg"],["Prime","11S-825","Prairie Sand","Golds and yellows","sonite-prime-11s-825-prairie-sand.jpg"],["Prime","20S-812","Mocha Mousse","Golds and yellows","sonite-prime-20s-812-mocha-mousse.jpg"],["Prime","21S-812","Mocha Mousse","Golds and yellows","sonite-prime-21s-812-mocha-mousse.jpg"],["Prime","42S-846","Incense","Golds and yellows","sonite-prime-42s-846-incense.jpg"],["Prime","42S-803","Ermine","Browns and bronzes","sonite-prime-42s-803-ermine.jpg"],["Prime","42S-806","Bronzo","Browns and bronzes","sonite-prime-42s-806-bronzo.jpg"],["Prime","1LS-809","Golden Brown","Browns and bronzes","sonite-prime-1ls-809-golden-brown.jpg"],["Prime","61S-831","Lark","Browns and bronzes","sonite-prime-61s-831-lark.jpg"],["Prime","61S-830","Otter","Browns and bronzes","sonite-prime-61s-830-otter.jpg"],["Prime","61K-830","Otter","Browns and bronzes","sonite-prime-61k-830-otter.jpg"],["Prime","61S-828","Java","Browns and bronzes","sonite-prime-61s-828-java.jpg"],["Prime","11S-809","Golden Brown","Browns and bronzes","sonite-prime-11s-809-golden-brown.jpg"],["Prime","11S-808","Bronze Brown","Browns and bronzes","sonite-prime-11s-808-bronze-brown.jpg"],["Prime","11S-804","Brevity Brown","Browns and bronzes","sonite-prime-11s-804-brevity-brown.jpg"],["Prime","1LS-804","Dark Earth","Browns and bronzes","sonite-prime-1ls-804-dark-earth.jpg"],["Prime","60S-820","Flagpen","Browns and bronzes","sonite-prime-60s-820-flagpen.jpg"],["Prime","20S-807","Chestnut","Browns and bronzes","sonite-prime-20s-807-chestnut.jpg"],["Prime","21S-807","Chestnut","Browns and bronzes","sonite-prime-21s-807-chestnut.jpg"],["Prime","2LS-820","Cocoa Brown","Browns and bronzes","sonite-prime-2ls-820-cocoa-brown.jpg"],["Prime","2LT-820","Cocoa Brown","Browns and bronzes","sonite-prime-2lt-820-cocoa-brown.jpg"],["Prime","20S-329","Rum Raisin","Browns and bronzes","sonite-prime-20s-329-rum-raisin.jpg"],["Prime","21S-814","Pompeii Gold","Golds and yellows","sonite-prime-21s-814-pompeii-gold.jpg"],["Prime","60S-412","Smoked Greenlip","Browns and bronzes","sonite-prime-60s-412-smoked-greenlip.jpg"],["Prime","20S-811","Frosted Almond","Golds and yellows","sonite-prime-20s-811-frosted-almond.jpg"],["Prime","2LS-811","Frosted Almond","Greys and silvers","sonite-prime-2ls-811-frosted-almond.jpg"],["Prime","21S-811","Frosted Almond","Greys and silvers","sonite-prime-21s-811-frosted-almond.jpg"],["Prime","20S-814","Pompeii Gold","Golds and yellows","sonite-prime-20s-814-pompeii-gold.jpg"],["Prime","11S-823","Bran","Golds and yellows","sonite-prime-11s-823-bran.jpg"],["Prime","11S-827","Adobe","Browns and bronzes","sonite-prime-11s-827-adobe.jpg"],["Prime","11S-821","Glazed Ginger","Browns and bronzes","sonite-prime-11s-821-glazed-ginger.jpg"],["Prime","12S-805","Bombay Brown","Browns and bronzes","sonite-prime-12s-805-bombay-brown.jpg"],["Prime","61S-810","S'mores","Browns and bronzes","sonite-prime-61s-810-smores.jpg"],["Prime","61S-805","Pecan Brown","Browns and bronzes","sonite-prime-61s-805-pecan-brown.jpg"],["Prime","61S-804","Chestnut Brown","Browns and bronzes","sonite-prime-61s-804-chestnut-brown.jpg"],["Prime","61T-804","Chestnut Brown","Browns and bronzes","sonite-prime-61t-804-chestnut-brown.jpg"],["Prime","61S-807","Brunette","Browns and bronzes","sonite-prime-61s-807-brunette.jpg"],["Prime","42S-208","Crabapple","Browns and bronzes","sonite-prime-42s-208-crabapple.jpg"],["Prime","60S-819","Brownlip","Browns and bronzes","sonite-prime-60s-819-brownlip.jpg"],["Prime","20S-822","Copper Tan","Browns and bronzes","sonite-prime-20s-822-copper-tan.jpg"],["Prime","2LS-819","Caramel","Browns and bronzes","sonite-prime-2ls-819-caramel.jpg"],["Prime","21S-819","Caramel","Browns and bronzes","sonite-prime-21s-819-caramel.jpg"],["Prime","11S-203","Fusion Coral","Reds, oranges and pinks","sonite-prime-11s-203-fusion-coral.jpg"],["Prime","11S-310","Autumn Glaze","Reds, oranges and pinks","sonite-prime-11s-310-autumn-glaze.jpg"],["Prime","11S-311","Picante","Reds, oranges and pinks","sonite-prime-11s-311-picante.jpg"],["Prime","12S-363","Harvest Pumpkin","Reds, oranges and pinks","sonite-prime-12s-363-harvest-pumpkin.jpg"],["Prime","12S-333","Hot Coral","Reds, oranges and pinks","sonite-prime-12s-333-hot-coral.jpg"],["Prime","11S-200","Mauve Morn","Whites and creams","sonite-prime-11s-200-mauve-morn.jpg"],["Prime","11S-210","Rose Shadow","Reds, oranges and pinks","sonite-prime-11s-210-rose-shadow.jpg"],["Prime","42S-255","Seashell Pink","Reds, oranges and pinks","sonite-prime-42s-255-seashell-pink.jpg"],["Prime","42S-216","Powder Pink","Reds, oranges and pinks","sonite-prime-42s-216-powder-pink.jpg"],["Prime","42S-212","Mauveglow","Reds, oranges and pinks","sonite-prime-42s-212-mauveglow.jpg"],["Prime","11S-202","Morning Glory","Reds, oranges and pinks","sonite-prime-11s-202-morning-glory.jpg"],["Prime","11S-209","Geranium Pink","Reds, oranges and pinks","sonite-prime-11s-209-geranium-pink.jpg"],["Prime","11S-330","Raspberry","Reds, oranges and pinks","sonite-prime-11s-330-raspberry.jpg"],["Prime","11S-300","Barberry","Reds, oranges and pinks","sonite-prime-11s-300-barberry.jpg"],["Prime","42S-304","Radish","Reds, oranges and pinks","sonite-prime-42s-304-radish.jpg"],["Prime","61S-321","Gerenium","Reds, oranges and pinks","sonite-prime-61s-321-gerenium.jpg"],["Prime","61S-322","Tango Red","Reds, oranges and pinks","sonite-prime-61s-322-tango-red.jpg"],["Prime","61S-320","Chili Pepper","Reds, oranges and pinks","sonite-prime-61s-320-chili-pepper.jpg"],["Prime","11S-309","Burgundy","Reds, oranges and pinks","sonite-prime-11s-309-burgundy.jpg"],["Prime","12S-317","Lipstick Red","Reds, oranges and pinks","sonite-prime-12s-317-lipstick-red.jpg"],["Prime","11S-619","Orchid Hush","Whites and creams","sonite-prime-11s-619-orchid-hush.jpg"],["Prime","42S-603","Lavender Aura","Purples","sonite-prime-42s-603-lavender-aura.jpg"],["Prime","12S-318","Biking Red","Reds, oranges and pinks","sonite-prime-12s-318-biking-red.jpg"],["Prime","12S-301","Festival Fuchsia","Reds, oranges and pinks","sonite-prime-12s-301-festival-fuchsia.jpg"],["Prime","1LS-309","Burgundy","Reds, oranges and pinks","sonite-prime-1ls-309-burgundy.jpg"],["Prime","11S-608","Purple Heather","Purples","sonite-prime-11s-608-purple-heather.jpg"],["Prime","42S-613","Mulled Grape","Purples","sonite-prime-42s-613-mulled-grape.jpg"],["Prime","11S-620","Italian Plum","Purples","sonite-prime-11s-620-italian-plum.jpg"],["Prime","12S-656","Vivid Viola","Purples","sonite-prime-12s-656-vivid-viola.jpg"],["Prime","11S-618","Gothic Grape","Purples","sonite-prime-11s-618-gothic-grape.jpg"],["Prime","61S-624","Orchid Bloom","Purples","sonite-prime-61s-624-orchid-bloom.jpg"],["Prime","61S-623","Elderberry","Purples","sonite-prime-61s-623-elderberry.jpg"],["Prime","61S-625","Sassafras","Purples","sonite-prime-61s-625-sassafras.jpg"],["Prime","60S-434","Smoked Paua","Greys and silvers","sonite-prime-60s-434-smoked-paua.jpg"],["Prime","60T-434","Smoked Paua","Blues","sonite-prime-60t-434-smoked-paua.jpg"],["Prime","42S-910","Glacier Gray","Whites and creams","sonite-prime-42s-910-glacier-gray.jpg"],["Prime","11S-902","Pumice Stone","Whites and creams","sonite-prime-11s-902-pumice-stone.jpg"],["Prime","11S-903","Wind Chime","Whites and creams","sonite-prime-11s-903-wind-chime.jpg"],["Prime","60S-917","Oyster White","Greys and silvers","sonite-prime-60s-917-oyster-white.jpg"],["Prime","20S-946","Silver","Greys and silvers","sonite-prime-20s-946-silver.jpg"],["Prime","21S-946","Silver","Greys and silvers","sonite-prime-21s-946-silver.jpg"],["Prime","2LS-946","Silver","Greys and silvers","sonite-prime-2ls-946-silver.jpg"],["Prime","2LS-938","Opal Gray","Greys and silvers","sonite-prime-2ls-938-opal-gray.jpg"],["Prime","20S-938","Opal Gray","Greys and silvers","sonite-prime-20s-938-opal-gray.jpg"],["Prime","21S-938","Opal Gray","Greys and silvers","sonite-prime-21s-938-opal-gray.jpg"],["Prime","42S-921","Muslin","Greys and silvers","sonite-prime-42s-921-muslin.jpg"],["Prime","11S-905","Silver Cloud","Greys and silvers","sonite-prime-11s-905-silver-cloud.jpg"],["Prime","1LS-905","Silver Cloud","Greys and silvers","sonite-prime-1ls-905-silver-cloud.jpg"],["Prime","1LK-905","Silver Cloud","Greys and silvers","sonite-prime-1lk-905-silver-cloud.jpg"],["Prime","11S-907","Tuffet","Greys and silvers","sonite-prime-11s-907-tuffet.jpg"],["Prime","60S-411","Greenlip","Greys and silvers","sonite-prime-60s-411-greenlip.jpg"],["Prime","11S-901","Silver Mink","Greys and silvers","sonite-prime-11s-901-silver-mink.jpg"],["Prime","61S-926","Canteen","Greys and silvers","sonite-prime-61s-926-canteen.jpg"],["Prime","61S-927","Tarmac","Greys and silvers","sonite-prime-61s-927-tarmac.jpg"],["Prime","61S-920","Licorice","Greys and silvers","sonite-prime-61s-920-licorice.jpg"],["Prime","20S-949","Smoked Pearl","Greys and silvers","sonite-prime-20s-949-smoked-pearl.jpg"],["Prime","21S-949","Smoked Pearl","Greys and silvers","sonite-prime-21s-949-smoked-pearl.jpg"],["Prime","42S-955","Wild Dove","Greys and silvers","sonite-prime-42s-955-wild-dove.jpg"],["Prime","11S-915","Cloudburst","Greys and silvers","sonite-prime-11s-915-cloudburst.jpg"],["Prime","11S-908","Gunmetal","Greys and silvers","sonite-prime-11s-908-gunmetal.jpg"],["Prime","21S-924","Frost Gray","Greys and silvers","sonite-prime-21s-924-frost-gray.jpg"],["Prime","20S-924","Frost Gray","Greys and silvers","sonite-prime-20s-924-frost-gray.jpg"],["Prime","60S-925","Gray Smoke","Greys and silvers","sonite-prime-60s-925-gray-smoke.jpg"],["Prime","60S-995","Dark Smoke","Greys and silvers","sonite-prime-60s-995-dark-smoke.jpg"],["Prime","12S-975","Plum Kitten","Blacks","sonite-prime-12s-975-plum-kitten.jpg"],["Prime","60S-938","Blacklip","Greys and silvers","sonite-prime-60s-938-blacklip.jpg"],["Prime","60S-935","Smoked Blacklip","Greys and silvers","sonite-prime-60s-935-smoked-blacklip.jpg"],["Prime","42S-914","Gargoyle","Greys and silvers","sonite-prime-42s-914-gargoyle.jpg"],["Prime","42S-925","Moonless Night","Blacks","sonite-prime-42s-925-moonless-night.jpg"],["Prime","11S-904","Pewter","Greys and silvers","sonite-prime-11s-904-pewter.jpg"],["Prime","11D-986","Castlerock","Greys and silvers","sonite-prime-11d-986-castlerock.jpg"],["Prime","11S-986","Castlerock","Blacks","sonite-prime-11s-986-castlerock.jpg"],["Prime","11S-909","Tricorn Black","Blacks","sonite-prime-11s-909-tricorn-black.jpg"],["Prime","11S-967","Black Grey","Blacks","sonite-prime-11s-967-black-grey.jpg"],["Prime","61S-918","Wren","Blacks","sonite-prime-61s-918-wren.jpg"],["Prime","61S-900","Looking Glass","Greys and silvers","sonite-prime-61s-900-looking-glass.jpg"],["Prime","61S-922","Paloma","Greys and silvers","sonite-prime-61s-922-paloma.jpg"],["Prime","61S-917","Dark Engine","Greys and silvers","sonite-prime-61s-917-dark-engine.jpg"],["Prime","61S-919","Beluga","Blacks","sonite-prime-61s-919-beluga.jpg"],["Prime","61K-919","Beluga","Greys and silvers","sonite-prime-61k-919-beluga.jpg"],["Prime","1LS-904","Pewter","Greys and silvers","sonite-prime-1ls-904-pewter.jpg"],["Prime","2LS-924","Frost Gray","Greys and silvers","sonite-prime-2ls-924-frost-gray.jpg"],["Prime","1LS-909","Tarmac","Blacks","sonite-prime-1ls-909-tarmac.jpg"],["Prime","2LS-966","Caviar","Blacks","sonite-prime-2ls-966-caviar.jpg"],["Prime","20K-966","Caviar","Greys and silvers","sonite-prime-20k-966-caviar.jpg"],["Prime","11S-501","Ballad Blue","Blues","sonite-prime-11s-501-ballad-blue.jpg"],["Prime","11S-503","Sky Blue","Blues","sonite-prime-11s-503-sky-blue.jpg"],["Prime","42S-906","Black Lead","Blacks","sonite-prime-42s-906-black-lead.jpg"],["Prime","21S-966","Caviar","Blacks","sonite-prime-21s-966-caviar.jpg"],["Prime","20S-966","Caviar","Blacks","sonite-prime-20s-966-caviar.jpg"],["Prime","42S-511","Dream Blue","Blues","sonite-prime-42s-511-dream-blue.jpg"],["Prime","11S-709","Blue Shadow","Blues","sonite-prime-11s-709-blue-shadow.jpg"],["Prime","11S-502","Aquamarine","Blues","sonite-prime-11s-502-aquamarine.jpg"],["Prime","1LS-522","Watson Lake","Blues","sonite-prime-1ls-522-watson-lake.jpg"],["Prime","42S-573","Delphinium Blue","Blues","sonite-prime-42s-573-delphinium-blue.jpg"],["Prime","42S-512","Bluesteel","Blues","sonite-prime-42s-512-bluesteel.jpg"],["Prime","42S-706","Blue Ashes","Blues","sonite-prime-42s-706-blue-ashes.jpg"],["Prime","42S-723","Stellar","Blues","sonite-prime-42s-723-stellar.jpg"],["Prime","42S-714","Majolica Blue","Blues","sonite-prime-42s-714-majolica-blue.jpg"],["Prime","12S-742","Corsair","Blues","sonite-prime-12s-742-corsair.jpg"],["Prime","11S-707","Real Teal","Blues","sonite-prime-11s-707-real-teal.jpg"],["Prime","61S-504","Miami Blue","Blues","sonite-prime-61s-504-miami-blue.jpg"],["Prime","61S-507","Olympic Blue","Blues","sonite-prime-61s-507-olympic-blue.jpg"],["Prime","61S-547","Shadow Blue","Blues","sonite-prime-61s-547-shadow-blue.jpg"],["Prime","1LS-549","Super Blue","Blues","sonite-prime-1ls-549-super-blue.jpg"],["Prime","11S-708","Moonlight Blue","Blues","sonite-prime-11s-708-moonlight-blue.jpg"],["Prime","11S-701","Ensign Blue","Blues","sonite-prime-11s-701-ensign-blue.jpg"],["Prime","11S-703","Estate Blue","Blues","sonite-prime-11s-703-estate-blue.jpg"],["Prime","1LS-799","Sea Blue","Blues","sonite-prime-1ls-799-sea-blue.jpg"],["Prime","1LK-799","Sea Blue","Blues","sonite-prime-1lk-799-sea-blue.jpg"],["Prime","1LS-521","Afternoon Sky","Blues","sonite-prime-1ls-521-afternoon-sky.jpg"],["Prime","1LS-708","Moonlight Blue","Blues","sonite-prime-1ls-708-moonlight-blue.jpg"],["Prime","61S-700","Walker Lake","Blues","sonite-prime-61s-700-walker-lake.jpg"],["Prime","61S-750","The Blue","Blues","sonite-prime-61s-750-the-blue.jpg"],["Prime","61S-775","Lapis","Blues","sonite-prime-61s-775-lapis.jpg"],["Prime","13S-712","Bijou Blue","Blues","sonite-prime-13s-712-bijou-blue.jpg"],["Prime","13S-711","Insignia Blue","Blues","sonite-prime-13s-711-insignia-blue.jpg"],["Prime","12S-702","Federal Blue","Blues","sonite-prime-12s-702-federal-blue.jpg"],["Prime","12T-702","Federal Blue","Blues","sonite-prime-12t-702-federal-blue.jpg"],["Prime","60S-554","City Night","Blues","sonite-prime-60s-554-city-night.jpg"],["Prime","11S-541","Riviera","Blues","sonite-prime-11s-541-riviera.jpg"],["Prime","11S-507","Sanctuary Spa","Blues","sonite-prime-11s-507-sanctuary-spa.jpg"],["Prime","11S-510","Splish Splash","Blues","sonite-prime-11s-510-splish-splash.jpg"],["Prime","11S-723","Deep Sapphire","Blues","sonite-prime-11s-723-deep-sapphire.jpg"],["Prime","60S-764","Peacock Plum","Blues","sonite-prime-60s-764-peacock-plum.jpg"],["Prime","11S-415","Sweet Garden","Greens and teals","sonite-prime-11s-415-sweet-garden.jpg"],["Prime","12S-430","June Bug","Greens and teals","sonite-prime-12s-430-june-bug.jpg"],["Prime","60S-419","Paua","Greens and teals","sonite-prime-60s-419-paua.jpg"],["Prime","13S-419","Smoke Pine","Greens and teals","sonite-prime-13s-419-smoke-pine.jpg"],["Prime","12S-409","Greener Pastures","Greens and teals","sonite-prime-12s-409-greener-pastures.jpg"],["Prime","11S-426","White Jade","Greens and teals","sonite-prime-11s-426-white-jade.jpg"],["Prime","11S-410","Four Leaf Clover","Greens and teals","sonite-prime-11s-410-four-leaf-clover.jpg"],["Prime","11S-414","Jolly Green","Greens and teals","sonite-prime-11s-414-jolly-green.jpg"],["Prime","11S-433","Cocktail Olive","Greens and teals","sonite-prime-11s-433-cocktail-olive.jpg"],["Prime","11S-428","Olive Branch","Greens and teals","sonite-prime-11s-428-olive-branch.jpg"],["Prime","61S-411","Palm Leaf","Greens and teals","sonite-prime-61s-411-palm-leaf.jpg"],["Prime","61S-440","Leaf Green","Greens and teals","sonite-prime-61s-440-leaf-green.jpg"],["Prime","61S-441","Epsom","Greens and teals","sonite-prime-61s-441-epsom.jpg"],["Prime","61S-442","Loden Green","Greens and teals","sonite-prime-61s-442-loden-green.jpg"],["Prime","1LS-428","Olive Branch","Greens and teals","sonite-prime-1ls-428-olive-branch.jpg"],["Prime","11S-429","Wild Lime","Greens and teals","sonite-prime-11s-429-wild-lime.jpg"],["Prime","61S-410","Sour Apple","Greens and teals","sonite-prime-61s-410-sour-apple.jpg"],["Prime","61S-437","Oasis","Greens and teals","sonite-prime-61s-437-oasis.jpg"],["Prime","61S-447","Willow","Greens and teals","sonite-prime-61s-447-willow.jpg"],["Prime","61S-450","Pesto","Greens and teals","sonite-prime-61s-450-pesto.jpg"],["Prime","11S-443","Fog Green","Greens and teals","sonite-prime-11s-443-fog-green.jpg"],["Prime","42S-451","Celadon Tint","Greens and teals","sonite-prime-42s-451-celadon-tint.jpg"],["Prime","11S-434","Eminent Bronze","Browns and bronzes","sonite-prime-11s-434-eminent-bronze.jpg"],["Prime","12S-810","Fennel Seed","Browns and bronzes","sonite-prime-12s-810-fennel-seed.jpg"],["Prime","20S-411","Green Moss","Golds and yellows","sonite-prime-20s-411-green-moss.jpg"],["Prime","11S-423","Tea","Greens and teals","sonite-prime-11s-423-tea.jpg"],["Prime","11S-438","Aloe","Greens and teals","sonite-prime-11s-438-aloe.jpg"],["Prime","1LS-438","Aloe","Greens and teals","sonite-prime-1ls-438-aloe.jpg"],["Prime","1LS-435","Ivy Green","Greens and teals","sonite-prime-1ls-435-ivy-green.jpg"],["Prime","11S-435","Ivy Green","Greens and teals","sonite-prime-11s-435-ivy-green.jpg"]];
+  var COLOURS=RAW.map(function(r){return {series:r[0],code:r[1],name:r[2],family:r[3],file:r[4]};});
+  var COLLECTIONS=["All","Prime","Lite","Lite Husk","Pool"];
+  var FAMILIES=[["All",""],["Whites and creams","#efe9d6"],["Golds and yellows","#c9a646"],["Browns and bronzes","#7a5a3a"],["Reds, oranges and pinks","#b8323c"],["Purples","#5e3a6e"],["Blues","#2f5f9e"],["Greens and teals","#4f8a4a"],["Greys and silvers","#a3a39c"],["Blacks","#222"]];
+  var picked=[], col="All", fam="All", q="", current=null;
+  function $(id){return document.getElementById(id);}
+  function byCode(c){for(var i=0;i<COLOURS.length;i++){if(COLOURS[i].code===c&&true)return COLOURS[i];}return null;}
+  function key(c){return c.series+"|"+c.code;}
+  function find(k){for(var i=0;i<COLOURS.length;i++){if(key(COLOURS[i])===k)return COLOURS[i];}return null;}
+  function alt(c){return "Sonite "+c.series+" mosaic, colour "+c.code+" "+c.name;}
+  function isPicked(c){return picked.indexOf(key(c))!==-1;}
+  function norm(s){return s.toLowerCase().replace(/[\s\-]/g,"");}
 
-  var picked = [];          // codes, in order chosen
-  var filter = "All";
-  var current = null;       // colour open in viewer
-
-  function $(id){ return document.getElementById(id); }
-  function byCode(c){ for (var i=0;i<COLOURS.length;i++){ if (COLOURS[i].code===c) return COLOURS[i]; } return null; }
-  function src(c){ return "swatches/" + c.file; }
-  function alt(c){ return "Sonite " + c.series + " mosaic, colour " + c.code + " " + c.name; }
-  function isPicked(c){ return picked.indexOf(c.code) !== -1; }
-
-  function renderFilters(){
-    var box = $("filters"); box.innerHTML = "";
-    COLLECTIONS.forEach(function(name){
-      var b = document.createElement("button");
-      b.className = "chip"; b.type = "button"; b.textContent = name;
-      b.setAttribute("aria-pressed", name===filter ? "true" : "false");
-      b.onclick = function(){ filter = name; renderFilters(); renderGrid(); };
+  function chips(boxId,list,val,set,withDot){
+    var box=$(boxId); box.innerHTML="";
+    list.forEach(function(item){
+      var name=withDot?item[0]:item;
+      var b=document.createElement("button"); b.className="chip"; b.type="button";
+      if(withDot&&item[1]){var d=document.createElement("span");d.className="dot";d.style.background=item[1];b.appendChild(d);}
+      b.appendChild(document.createTextNode(name));
+      b.setAttribute("aria-pressed",name===val?"true":"false");
+      b.onclick=function(){set(name);};
       box.appendChild(b);
     });
   }
-
-  function renderGrid(){
-    var grid = $("grid"); grid.innerHTML = "";
-    COLOURS.forEach(function(c){
-      if (filter !== "All" && c.series !== filter) return;
-      var d = document.createElement("div");
-      d.className = "card" + (isPicked(c) ? " picked" : "");
-      d.tabIndex = 0;
-      d.setAttribute("role","button");
-      d.setAttribute("aria-label", c.code + " " + c.name + ", " + c.series);
-      d.innerHTML = '<span class="tag"></span><span class="tick">&#10003;</span><img loading="lazy">';
-      d.querySelector(".tag").textContent = c.series;
-      var im = d.querySelector("img"); im.src = src(c); im.alt = alt(c);
-      d.onclick = function(){ openViewer(c); };
-      d.onkeydown = function(e){ if (e.key==="Enter"||e.key===" "){ e.preventDefault(); openViewer(c); } };
-      grid.appendChild(d);
+  function renderChips(){
+    chips("collections",COLLECTIONS,col,function(v){col=v;renderChips();renderGrid();},false);
+    chips("families",FAMILIES,fam,function(v){fam=v;renderChips();renderGrid();},true);
+  }
+  function visible(){
+    var nq=norm(q);
+    return COLOURS.filter(function(c){
+      if(col!=="All"&&c.series!==col)return false;
+      if(fam!=="All"&&c.family!==fam)return false;
+      if(nq&&norm(c.code+c.name).indexOf(nq)===-1&&norm(c.name).indexOf(nq)===-1)return false;
+      return true;
     });
   }
-
+  function renderGrid(){
+    var grid=$("grid"), list=visible(); grid.innerHTML="";
+    var frag=document.createDocumentFragment();
+    list.forEach(function(c){
+      var d=document.createElement("div");
+      d.className="card"+(isPicked(c)?" picked":""); d.tabIndex=0; d.setAttribute("role","button");
+      d.setAttribute("aria-label",c.code+" "+c.name+", "+c.series);
+      d.innerHTML='<span class="tag"></span><span class="tick">&#10003;</span><img loading="lazy" width="240" height="296">';
+      d.querySelector(".tag").textContent=c.series;
+      var im=d.querySelector("img"); im.src="s/"+c.file; im.alt=alt(c);
+      d.onclick=function(){openViewer(c);};
+      d.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();openViewer(c);}};
+      frag.appendChild(d);
+    });
+    grid.appendChild(frag);
+    $("count").textContent=list.length===1?"1 colour":list.length+" colours";
+    $("empty").hidden=list.length!==0;
+  }
+  function listText(){
+    return picked.map(function(k){var c=find(k);return "Sonite "+c.series+" "+c.code+" "+c.name;}).join("\n");
+  }
+  function mailto(){
+    var body="Hello Middle Earth Tiles,\n\nPlease could I have samples of these Sonite colours:\n\n"+
+      picked.map(function(k){var c=find(k);return "- Sonite "+c.series+" "+c.code+" "+c.name;}).join("\n")+
+      "\n\nMy name:\nPhone:\nDelivery address:\nAbout my project:\n\nThank you";
+    return "mailto:"+EMAIL+"?subject="+encodeURIComponent("Sonite sample request")+"&body="+encodeURIComponent(body);
+  }
   function renderSelection(){
-    var sel = $("selection"), cmp = $("compare");
-    sel.className = "selection" + (picked.length ? " show" : "");
-    cmp.innerHTML = "";
-    picked.forEach(function(code){
-      var c = byCode(code);
-      var s = document.createElement("div"); s.className = "slot";
-      s.innerHTML = '<img><button class="remove" type="button" aria-label="Remove">&times;</button>';
-      var im = s.querySelector("img"); im.src = src(c); im.alt = alt(c);
-      im.onclick = function(){ openViewer(c); };
-      s.querySelector(".remove").onclick = function(){ toggle(c); };
+    var cmp=$("compare"); cmp.innerHTML="";
+    picked.forEach(function(k){
+      var c=find(k), s=document.createElement("div"); s.className="slot";
+      s.innerHTML='<img><button class="remove" type="button">&times;</button>';
+      var im=s.querySelector("img"); im.src="l/"+c.file; im.alt=alt(c);
+      im.onclick=function(){openViewer(c);};
+      var rb=s.querySelector(".remove"); rb.setAttribute("aria-label","Remove "+c.code+" "+c.name);
+      rb.onclick=function(){toggle(c); if(!picked.length) closeCmp();};
       cmp.appendChild(s);
     });
-    for (var i=picked.length;i<MAX && picked.length>0;i++){
-      var e = document.createElement("div"); e.className = "slot empty";
-      e.textContent = "Add another colour"; cmp.appendChild(e);
-    }
-    $("request").href = mailto();
-    var bar = $("bar");
-    bar.className = "bar" + (picked.length ? " show" : "");
-    $("barText").textContent = picked.length + (picked.length===1 ? " colour chosen" : " colours chosen");
+    $("request").href=mailto();
+    $("bar").className="bar"+(picked.length?" show":"");
+    $("barText").textContent=picked.length+(picked.length===1?" colour chosen":" colours chosen");
+    $("copybox").className="copybox"; $("cmpMsg").textContent="";
   }
-
-  function mailto(){
-    var lines = picked.map(function(code){ var c = byCode(code); return "- Sonite " + c.series + " " + c.code + " " + c.name; });
-    var body = "Hello Middle Earth Tiles,\n\nPlease could I have samples of these Sonite colours:\n\n" + lines.join("\n") +
-      "\n\nMy name:\nPhone:\nDelivery address:\nAbout my project:\n\nThank you";
-    return "mailto:" + EMAIL + "?subject=" + encodeURIComponent("Sonite sample request") + "&body=" + encodeURIComponent(body);
-  }
-
   function toggle(c){
-    var i = picked.indexOf(c.code);
-    if (i !== -1){ picked.splice(i,1); }
-    else {
-      if (picked.length >= MAX){ return false; }
-      picked.push(c.code);
-    }
-    renderGrid(); renderSelection(); syncViewer();
-    return true;
+    var i=picked.indexOf(key(c));
+    if(i!==-1){picked.splice(i,1);}
+    else{if(picked.length>=MAX)return false; picked.push(key(c));}
+    renderGrid(); renderSelection(); syncViewer(); return true;
   }
-
   function openViewer(c){
-    current = c;
-    $("bigImg").src = src(c); $("bigImg").alt = alt(c);
-    $("bigMeta").innerHTML = "";
-    var b = document.createElement("b"); b.textContent = c.code + " " + c.name;
-    $("bigMeta").appendChild(b);
-    $("bigMeta").appendChild(document.createTextNode("  Sonite " + c.series + " mosaic"));
-    $("zoombox").className = "zoombox"; $("bigZoom").textContent = "Zoom in";
-    $("bigMsg").textContent = "";
-    syncViewer();
-    $("viewer").className = "viewer show";
-    $("bigClose").focus();
+    current=c; $("bigImg").src="l/"+c.file; $("bigImg").alt=alt(c);
+    var m=$("bigMeta"); m.innerHTML=""; var b=document.createElement("b"); b.textContent=c.code+" "+c.name; m.appendChild(b);
+    m.appendChild(document.createTextNode("  Sonite "+c.series+" mosaic"));
+    $("zoombox").className="zoombox"; $("bigZoom").textContent="Zoom in"; $("bigMsg").textContent="";
+    syncViewer(); $("viewer").className="overlay show"; $("bigClose").focus();
   }
-  function syncViewer(){
-    if (!current) return;
-    $("bigAdd").textContent = isPicked(current) ? "Remove from my colours" : "Add to my colours";
-  }
-  function closeViewer(){ $("viewer").className = "viewer"; current = null; }
+  function syncViewer(){ if(current) $("bigAdd").textContent=isPicked(current)?"Remove from my colours":"Add to my colours"; }
+  function closeViewer(){ $("viewer").className="overlay"; current=null; }
+  function openCmp(){ renderSelection(); $("cmp").className="overlay show"; }
+  function closeCmp(){ $("cmp").className="overlay"; }
 
-  $("bigAdd").onclick = function(){
-    var wasPicked = isPicked(current);
-    if (!toggle(current)){
-      $("bigMsg").textContent = "You can compare up to four colours. Remove one to add another.";
-      return;
-    }
-    if (!wasPicked){ closeViewer(); }
+  $("bigAdd").onclick=function(){
+    var was=isPicked(current);
+    if(!toggle(current)){ $("bigMsg").textContent="You can compare up to four colours. Remove one to add another."; return; }
+    if(!was) closeViewer();
   };
-  $("bigZoom").onclick = function(){
-    var z = $("zoombox");
-    var on = z.className.indexOf("zoomed") === -1;
-    z.className = "zoombox" + (on ? " zoomed" : "");
-    $("bigZoom").textContent = on ? "Zoom out" : "Zoom in";
+  $("bigZoom").onclick=function(){
+    var z=$("zoombox"), on=z.className.indexOf("zoomed")===-1;
+    z.className="zoombox"+(on?" zoomed":""); $("bigZoom").textContent=on?"Zoom out":"Zoom in";
   };
-  $("bigImg").onclick = function(){ $("bigZoom").onclick(); };
-  $("bigClose").onclick = closeViewer;
-  $("viewer").onclick = function(e){ if (e.target === $("viewer")) closeViewer(); };
-  document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeViewer(); });
-  $("clear").onclick = function(){ picked = []; renderGrid(); renderSelection(); };
-  $("barGo").onclick = function(){ $("selection").scrollIntoView({behavior:"smooth", block:"start"}); };
+  $("bigImg").onclick=function(){ $("bigZoom").onclick(); };
+  $("bigClose").onclick=closeViewer;
+  $("viewer").onclick=function(e){ if(e.target===$("viewer")) closeViewer(); };
+  $("cmp").onclick=function(e){ if(e.target===$("cmp")) closeCmp(); };
+  $("barGo").onclick=openCmp;
+  $("cmpMore").onclick=closeCmp;
+  $("clear").onclick=function(){ picked=[]; renderGrid(); renderSelection(); closeCmp(); };
+  $("copy").onclick=function(){
+    var text=listText(), box=$("copybox");
+    function fallback(){ box.value=text; box.className="copybox show"; box.focus(); box.select();
+      $("cmpMsg").textContent="Select and copy the list below, then paste it into our contact form or an email."; }
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){
+        $("cmpMsg").textContent="Copied. Paste it into our contact form or an email to sales@middleearthtiles.co.nz";
+      },fallback);
+    } else fallback();
+  };
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"){ if(current) closeViewer(); else closeCmp(); } });
+  var t; $("q").oninput=function(){ clearTimeout(t); var v=this.value; t=setTimeout(function(){ q=v.trim(); renderGrid(); },150); };
 
-  renderFilters(); renderGrid(); renderSelection();
+  renderChips(); renderGrid(); renderSelection();
 })();
 </script>
 </body>

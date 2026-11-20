@@ -56,6 +56,12 @@
   .slot .remove{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--white);color:var(--olive);font-size:18px;line-height:28px;cursor:pointer}
   .copybox{display:none;width:100%;margin-top:10px;font:inherit;font-size:.9rem;padding:8px;border:1px solid var(--line);border-radius:6px;min-height:110px}
   .copybox.show{display:block}
+  .tabs{display:flex;gap:0;margin:0 0 16px;border:1px solid var(--green);border-radius:8px;overflow:hidden;width:max-content;max-width:100%}
+  .tab{border:0;background:var(--white);color:var(--green);padding:10px 22px;font:inherit;font-weight:600;font-size:1rem;cursor:pointer}
+  .tab[aria-selected="true"]{background:var(--green);color:var(--white)}
+  .pgrid .card img{aspect-ratio:1/1;background:#f2f2ef}
+  .pname{display:block;margin:6px 2px 2px;font-size:.88rem;color:var(--olive);line-height:1.25}
+  .slot .cap{display:block;margin:6px 2px 0;font-size:.85rem;color:var(--olive)}
   @media (max-width:640px){
     h1{font-size:1.3rem}
     .grid{grid-template-columns:repeat(3,1fr);gap:8px}
@@ -67,6 +73,12 @@
 </head>
 <body>
 <div class="wrap">
+  <div class="tabs" role="tablist" aria-label="Colours or patterns">
+    <button class="tab" id="tabC" role="tab" type="button" aria-selected="true">Colours</button>
+    <button class="tab" id="tabP" role="tab" type="button" aria-selected="false">Patterns</button>
+  </div>
+
+  <div id="viewC">
   <h1>Choose your Sonite colours</h1>
   <p class="intro">407 mosaic colours. Tap a colour to see it larger, choose up to four to compare side by side, then ask us for samples.</p>
 
@@ -84,6 +96,25 @@
   <p class="empty" id="empty" hidden>No colours match. Try another colour or clear the search.</p>
 
   <p class="note">Colours are photographs of real samples and are a guide only. Screens vary, so please ask us for a physical sample before you choose.</p>
+  </div>
+
+  <div id="viewP" hidden>
+  <h1>Choose your Sonite pattern</h1>
+  <p class="intro"><span id="pTotal"></span> pattern drawings from Sonite's range. Most can be made in any colour from the Colours tab. Tap a drawing to see it larger and add it to your choices.</p>
+
+  <p class="label">Collection</p>
+  <div class="filters" id="pcollections" role="group" aria-label="Pattern collection"></div>
+
+  <div class="search">
+    <input id="pq" type="search" placeholder="Search by pattern name, e.g. Polaris or Herringbone" aria-label="Search by pattern name">
+    <span class="count" id="pcount"></span>
+  </div>
+
+  <div class="grid pgrid" id="pgrid"></div>
+  <p class="empty" id="pempty" hidden>No patterns match. Try another collection or clear the search.</p>
+
+  <p class="note">Drawings show the layout only, not the colour or finish. Many patterns can also be made as a colour gradient. Tell us what you have in mind and we will show you your design in a render.</p>
+  </div>
 </div>
 
 <div class="bar" id="bar">
@@ -106,17 +137,17 @@
 
 <div class="overlay" id="cmp" role="dialog" aria-modal="true" aria-label="Your colours side by side">
   <div class="panel wide">
-    <h2>Your colours, side by side</h2>
-    <p class="hint">Tap a colour to see it larger. Use the cross to remove it.</p>
+    <h2 id="cmpTitle">Your colours, side by side</h2>
+    <p class="hint">Tap a picture to see it larger. Use the cross to remove it.</p>
     <div class="compare" id="compare"></div>
     <div class="row">
-      <a class="btn" id="request" href="#">Request samples of these colours</a>
+      <a class="btn" id="request" href="#">Request samples</a>
       <button class="btn secondary" id="copy" type="button">Copy my list</button>
       <button class="btn secondary" id="cmpMore" type="button">Choose more</button>
       <button class="btn secondary" id="clear" type="button">Clear all</button>
     </div>
     <p class="msg" id="cmpMsg"></p>
-    <textarea class="copybox" id="copybox" readonly aria-label="Your colour list"></textarea>
+    <textarea class="copybox" id="copybox" readonly aria-label="Your list"></textarea>
   </div>
 </div>
 
@@ -128,6 +159,11 @@
   var COLLECTIONS=["All","Prime","Lite","Lite Husk","Pool"];
   var FAMILIES=[["All",""],["Whites and creams","#efe9d6"],["Golds and yellows","#c9a646"],["Browns and bronzes","#7a5a3a"],["Reds, oranges and pinks","#b8323c"],["Purples","#5e3a6e"],["Blues","#2f5f9e"],["Greens and teals","#4f8a4a"],["Greys and silvers","#a3a39c"],["Blacks","#222"]];
   var picked=[], col="All", fam="All", q="", current=null;
+  var PRAW=[["CLASSIC","Grid 5","classic-grid-5"],["CLASSIC","Grid 510","classic-grid-510"],["CLASSIC","Grid 10","classic-grid-10"],["CLASSIC","Grid 15","classic-grid-15"],["CLASSIC","Grid 735","classic-grid-735"],["CLASSIC","Grid 1530","classic-grid-1530"],["CLASSIC","Grid 20","classic-grid-20"],["CLASSIC","Grid 30","classic-grid-30"],["CLASSIC","Grid 40","classic-grid-40"],["CLASSIC","Grid 241","classic-grid-241"],["CLASSIC","Grid 221","classic-grid-221"],["CLASSIC","Grid 1531","classic-grid-1531"],["CLASSIC","Half Round","classic-half-round"],["CLASSIC","Micro Round","classic-micro-round"],["CLASSIC","Penny Round","classic-penny-round"],["CLASSIC","Quarter Round","classic-quarter-round"],["CLASSIC","Grid 15100","classic-grid-15100"],["MASON","Thread 510","mason-thread-510"],["MASON","Braid 1530","mason-braid-1530"],["MASON","Bond 1530","mason-bond-1530"],["MASON","Bamboo 735","mason-bamboo-735"],["MASON","Bamboo 1530","mason-bamboo-1530"],["MASON","Bamboo M","mason-bamboo-m"],["MASON","Bamboo L","mason-bamboo-l"],["MASON","Herringbone 735","mason-herringbone-735"],["MASON","Herringbone M100","mason-herringbone-m100"],["MASON","Laida 510","mason-laida-510"],["MASON","Laida 735","mason-laida-735"],["MASON","Ribbed 735","mason-ribbed-735"],["MASON","Madison 510","mason-madison-510"],["MASON","Madison 1530","mason-madison-1530"],["MASON","Madison 241","mason-madison-241"],["MASON","Herringbone 1530","mason-herringbone-1530"],["MASON","Basket Weave 735","mason-basket-weave-735"],["MASON","Basket Weave M100","mason-basket-weave-m100"],["MASON","Gallone M25","mason-gallone-m25"],["MASON","Matrix","mason-matrix"],["MASON","Herringbone 241","mason-herringbone-241"],["MASON","Bamboo 241","mason-bamboo-241"],["MASON","Basket Weave 241","mason-basket-weave-241"],["MASON","Bond 241","mason-bond-241"],["MASON","Gallone L 41","mason-gallone-l-41"],["MASON","Herringbone L","mason-herringbone-l"],["MASON","Bamboo 1121","mason-bamboo-1121"],["GEOMETRIC","Bond 1530","geometric-bond-1530"],["GEOMETRIC","Chevron","geometric-chevron"],["GEOMETRIC","Constellation","geometric-constellation"],["GEOMETRIC","Cosmos","geometric-cosmos"],["GEOMETRIC","Deck","geometric-deck"],["GEOMETRIC","Ellipse","geometric-ellipse"],["GEOMETRIC","Ellipse N","geometric-ellipse-n"],["GEOMETRIC","Equinox","geometric-equinox"],["GEOMETRIC","Escher","geometric-escher"],["GEOMETRIC","Helix","geometric-helix"],["GEOMETRIC","Honeycomb L","geometric-honeycomb-l"],["GEOMETRIC","Honeycomb S","geometric-honeycomb-s"],["GEOMETRIC","Pleats","geometric-pleats"],["GEOMETRIC","Polaris","geometric-polaris"],["GEOMETRIC","Pulsar","geometric-pulsar"],["GEOMETRIC","Supernova","geometric-supernova"],["GEOMETRIC","Diamond 10×10","geometric-diamond-10x10"],["GEOMETRIC","Diamond 15×15","geometric-diamond-15x15"],["GEOMETRIC","Diamond 20×20","geometric-diamond-20x20"],["GEOMETRIC","Shima","geometric-shima"],["GEOMETRIC","Scallop L","geometric-scallop-l"],["GEOMETRIC","Scallop S","geometric-scallop-s"],["GEOMETRIC","Apeture","geometric-apeture"],["GEOMETRIC","Cosmos M","geometric-cosmos-m"],["GEOMETRIC","Equinox SM","geometric-equinox-sm"],["GEOMETRIC","Kent","geometric-kent"],["GEOMETRIC","Phikul","geometric-phikul"],["GEOMETRIC","Cosmos SM","geometric-cosmos-sm"],["GEOMETRIC","Trifold","geometric-trifold"],["GEOMETRIC","Triad","geometric-triad"],["GEOMETRIC","Tiffany","geometric-tiffany"],["GEOMETRIC","Chevron Wedge","geometric-chevron-wedge"],["GEOMETRIC","Chevron Imperial","geometric-chevron-imperial"],["GEOMETRIC","Cosmos Stepped","geometric-cosmos-stepped"],["GEOMETRIC","Escher Grava","geometric-escher-grava"],["GEOMETRIC","Cosmos SXL","geometric-cosmos-sxl"],["GEOMETRIC","Elongated Hexagon","geometric-elongated-hexagon"],["GEOMETRIC","Elongated Hexagon Cross","geometric-elongated-hexagon-cross"],["TEXTILE","Herringbone 510 Weave","textile-herringbone-510-weave"],["TEXTILE","Button 15 mm.","textile-button-15-mm"],["TEXTILE","Button 19 mm.","textile-button-19-mm"],["TEXTILE","Button 24 mm.","textile-button-24-mm"],["TEXTILE","Button 30 mm.","textile-button-30-mm"],["TEXTILE","Bamboo 510 Weave","textile-bamboo-510-weave"],["TEXTILE","Twill 510 Weave","textile-twill-510-weave"],["KERTAS","Starburst L","kertas-starburst-l"],["KERTAS","Starburst M","kertas-starburst-m"],["KERTAS","Starburst S","kertas-starburst-s"],["KERTAS","Sunrise M","kertas-sunrise-m"],["KERTAS","Sunrise S","kertas-sunrise-s"],["METROPOLITAN","Broadway","metropolitan-broadway"],["METROPOLITAN","Empire","metropolitan-empire"],["METROPOLITAN","Cane Weave","metropolitan-cane-weave"],["METROPOLITAN","Keystone","metropolitan-keystone"],["METROPOLITAN","Lagonda","metropolitan-lagonda"],["METROPOLITAN","Palladio","metropolitan-palladio"],["METROPOLITAN","Soho","metropolitan-soho"],["METROPOLITAN","Tribeca","metropolitan-tribeca"],["METROPOLITAN","Picket","metropolitan-picket"],["METROPOLITAN","Castle","metropolitan-castle"],["METROPOLITAN","Cane Weave S","metropolitan-cane-weave-s"],["METROPOLITAN","Midtown","metropolitan-midtown"],["GARDEN","Bloom","garden-bloom"],["GARDEN","Pleiades","garden-pleiades"],["GARDEN","Laurel","garden-laurel"],["GARDEN","Rhombus","garden-rhombus"],["GARDEN","Big Cloud","garden-big-cloud"],["GARDEN","Ripple","garden-ripple"],["GARDEN","Gingko Leaf","garden-gingko-leaf"],["GARDEN","Chrysanthemum","garden-chrysanthemum"],["ANDALUSIA","Ankara","andalusia-ankara"],["ANDALUSIA","Araban","andalusia-araban"],["ANDALUSIA","Izmir","andalusia-izmir"],["ANDALUSIA","Ishtar","andalusia-ishtar"],["ANDALUSIA","Almeria","andalusia-almeria"],["ANDALUSIA","Alhambra","andalusia-alhambra"],["ANDALUSIA","Lucena","andalusia-lucena"],["ANDALUSIA","Ronda","andalusia-ronda"],["ANDALUSIA","Damacus XS","andalusia-damacus-xs"],["ANDALUSIA","Damascus S","andalusia-damascus-s"],["ANDALUSIA","Damascus M","andalusia-damascus-m"],["ANDALUSIA","Tangier","andalusia-tangier"],["ANDALUSIA","Rosette","andalusia-rosette"],["ANDALUSIA","Cadiz S","andalusia-cadiz-s"],["ANDALUSIA","Cadiz M","andalusia-cadiz-m"],["ANDALUSIA","Malaga S","andalusia-malaga-s"],["ANDALUSIA","Malaga M","andalusia-malaga-m"],["ANDALUSIA","Cordova","andalusia-cordova"],["ANDALUSIA","Collage Andalusia","andalusia-collage-andalusia"],["ANDALUSIA","Granada","andalusia-granada"],["ANDALUSIA","Seville","andalusia-seville"],["ANDALUSIA","Yeseria S","andalusia-yeseria-s"],["ANDALUSIA","Yeseria L","andalusia-yeseria-l"],["SIAMESE","Benjarong","siamese-benjarong"],["SIAMESE","Morning Lotus","siamese-morning-lotus"],["SIAMESE","Jasmine","siamese-jasmine"],["SIAMESE","Kannika L","siamese-kannika-l"],["SIAMESE","Kannika S","siamese-kannika-s"],["SIAMESE","Rattana 1","siamese-rattana-1"],["SIAMESE","Rattana 2","siamese-rattana-2"],["SIAMESE","Rattana 1 + 2","siamese-rattana-1-2"],["SIAMESE","Banyan","siamese-banyan"],["SIAMESE","Waterlily","siamese-waterlily"],["SHANGHAI","Archaic Bronze","shanghai-archaic-bronze"],["SHANGHAI","Archaic Bronze B","shanghai-archaic-bronze-b"],["SHANGHAI","Chinese Lattice","shanghai-chinese-lattice"],["SHANGHAI","Cracked Ice M","shanghai-cracked-ice-m"],["SHANGHAI","Cracked Ice S","shanghai-cracked-ice-s"],["SHANGHAI","Wish-Granting Clouds","shanghai-wish-granting-clouds"],["SAFARI","Dappled","safari-dappled"],["SAFARI","Gamba","safari-gamba"],["SAFARI","Nile Croc","safari-nile-croc"],["SAFARI","Python","safari-python"],["SAFARI","Stripes","safari-stripes"],["SAFARI","Lizard","safari-lizard"]];
+  function tc(s){return s.charAt(0)+s.slice(1).toLowerCase();}
+  var PATTERNS=PRAW.map(function(r,i){return {id:i,col:tc(r[0]),name:r[1],thumb:"pt/"+r[2]+".jpg",full:"p/"+r[2]+".jpg"};});
+  var PCOLS=["All"]; PATTERNS.forEach(function(p){if(PCOLS.indexOf(p.col)===-1)PCOLS.push(p.col);});
+  var pat=null, pcol="All", pq="", mode="colours", curPat=null;
   function $(id){return document.getElementById(id);}
   function byCode(c){for(var i=0;i<COLOURS.length;i++){if(COLOURS[i].code===c&&true)return COLOURS[i];}return null;}
   function key(c){return c.series+"|"+c.code;}
@@ -179,13 +215,53 @@
     $("count").textContent=list.length===1?"1 colour":list.length+" colours";
     $("empty").hidden=list.length!==0;
   }
+  function patLabel(p){return p.name+" (Sonite "+p.col+" pattern)";}
+  function pvisible(){
+    var nq=norm(pq);
+    return PATTERNS.filter(function(p){
+      if(pcol!=="All"&&p.col!==pcol)return false;
+      if(nq&&norm(p.name+p.col).indexOf(nq)===-1)return false;
+      return true;
+    });
+  }
+  function renderPChips(){ chips("pcollections",PCOLS,pcol,function(v){pcol=v;renderPChips();renderPGrid();},false); }
+  function renderPGrid(){
+    var grid=$("pgrid"), list=pvisible(); grid.innerHTML="";
+    var frag=document.createDocumentFragment();
+    list.forEach(function(p){
+      var d=document.createElement("div");
+      d.className="card"+(pat===p.id?" picked":""); d.tabIndex=0; d.setAttribute("role","button");
+      d.setAttribute("aria-label",p.name+", "+p.col+" collection");
+      d.innerHTML='<span class="tag"></span><span class="tick">&#10003;</span><img loading="lazy" referrerpolicy="no-referrer" width="240" height="240"><span class="pname"></span>';
+      d.querySelector(".tag").textContent=p.col;
+      d.querySelector(".pname").textContent=p.name;
+      var im=d.querySelector("img"); im.src=p.thumb; im.alt="Sonite "+p.name+" mosaic pattern drawing";
+      d.onclick=function(){openPatViewer(p);};
+      d.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();openPatViewer(p);}};
+      frag.appendChild(d);
+    });
+    grid.appendChild(frag);
+    $("pcount").textContent=list.length===1?"1 pattern":list.length+" patterns";
+    $("pempty").hidden=list.length!==0;
+  }
+  function setMode(m){
+    mode=m;
+    $("viewC").hidden=m!=="colours"; $("viewP").hidden=m!=="patterns";
+    $("tabC").setAttribute("aria-selected",m==="colours"?"true":"false");
+    $("tabP").setAttribute("aria-selected",m==="patterns"?"true":"false");
+    if(m==="patterns"&&!$("pgrid").children.length){renderPChips();renderPGrid();}
+  }
   function listText(){
-    return picked.map(function(k){var c=find(k);return "Sonite "+c.series+" "+c.code+" "+c.name;}).join("\n");
+    var lines=picked.map(function(k){var c=find(k);return "Sonite "+c.series+" "+c.code+" "+c.name;});
+    if(pat!==null) lines.push("Pattern: "+patLabel(PATTERNS[pat]));
+    return lines.join("\n");
   }
   function mailto(){
-    var body="Hello Middle Earth Tiles,\n\nPlease could I have samples of these Sonite colours:\n\n"+
-      picked.map(function(k){var c=find(k);return "- Sonite "+c.series+" "+c.code+" "+c.name;}).join("\n")+
-      "\n\nMy name:\nPhone:\nDelivery address:\nAbout my project:\n\nThank you";
+    var body="Hello Middle Earth Tiles,\n\n";
+    if(picked.length) body+="Please could I have samples of these Sonite colours:\n\n"+
+      picked.map(function(k){var c=find(k);return "- Sonite "+c.series+" "+c.code+" "+c.name;}).join("\n")+"\n\n";
+    if(pat!==null) body+=(picked.length?"The pattern I like is:\n\n":"I am interested in this Sonite pattern:\n\n")+"- "+patLabel(PATTERNS[pat])+"\n\n";
+    body+="My name:\nPhone:\nDelivery address:\nAbout my project:\n\nThank you";
     return "mailto:"+EMAIL+"?subject="+encodeURIComponent("Sonite sample request")+"&body="+encodeURIComponent(body);
   }
   function renderSelection(){
@@ -199,9 +275,25 @@
       rb.onclick=function(){toggle(c); if(!picked.length) closeCmp();};
       cmp.appendChild(s);
     });
+    if(pat!==null){
+      var p=PATTERNS[pat], s2=document.createElement("div"); s2.className="slot";
+      s2.innerHTML='<img referrerpolicy="no-referrer"><span class="cap"></span><button class="remove" type="button">&times;</button>';
+      var pi=s2.querySelector("img"); pi.src=p.thumb; pi.alt="Sonite "+p.name+" mosaic pattern drawing";
+      pi.onclick=function(){openPatViewer(p);};
+      s2.querySelector(".cap").textContent="Pattern: "+p.name;
+      var pr=s2.querySelector(".remove"); pr.setAttribute("aria-label","Remove pattern "+p.name);
+      pr.onclick=function(){setPat(null); if(!picked.length) closeCmp();};
+      cmp.appendChild(s2);
+    }
+    $("cmpTitle").textContent=pat!==null?"Your choices, side by side":"Your colours, side by side";
     $("request").href=mailto();
-    $("bar").className="bar"+(picked.length?" show":"");
-    $("barText").textContent=picked.length+(picked.length===1?" colour chosen":" colours chosen");
+    var any=picked.length||pat!==null;
+    $("bar").className="bar"+(any?" show":"");
+    var parts=[];
+    if(picked.length) parts.push(picked.length+(picked.length===1?" colour":" colours"));
+    if(pat!==null) parts.push("1 pattern");
+    $("barText").textContent=parts.join(" and ")+" chosen";
+    $("barGo").textContent=pat!==null?"See my choices":"Compare side by side";
     $("copybox").className="copybox"; $("cmpMsg").textContent="";
   }
   function toggle(c){
@@ -210,19 +302,31 @@
     else{if(picked.length>=MAX)return false; picked.push(key(c));}
     renderGrid(); renderSelection(); syncViewer(); return true;
   }
+  function setPat(id){ pat=id; renderPGrid(); renderSelection(); syncViewer(); }
+  function openPatViewer(p){
+    curPat=p; current=null; $("bigImg").referrerPolicy="no-referrer"; $("bigImg").src=p.full; $("bigImg").alt="Sonite "+p.name+" mosaic pattern drawing";
+    var m=$("bigMeta"); m.innerHTML=""; var b=document.createElement("b"); b.textContent=p.name; m.appendChild(b);
+    m.appendChild(document.createTextNode("  Sonite "+p.col+" pattern"));
+    $("zoombox").className="zoombox"; $("bigZoom").textContent="Zoom in"; $("bigMsg").textContent="";
+    syncViewer(); $("viewer").className="overlay show"; $("bigClose").focus();
+  }
   function openViewer(c){
-    current=c; $("bigImg").src="l/"+c.file; $("bigImg").alt=alt(c);
+    curPat=null; current=c; $("bigImg").src="l/"+c.file; $("bigImg").alt=alt(c);
     var m=$("bigMeta"); m.innerHTML=""; var b=document.createElement("b"); b.textContent=c.code+" "+c.name; m.appendChild(b);
     m.appendChild(document.createTextNode("  Sonite "+c.series+" mosaic"));
     $("zoombox").className="zoombox"; $("bigZoom").textContent="Zoom in"; $("bigMsg").textContent="";
     syncViewer(); $("viewer").className="overlay show"; $("bigClose").focus();
   }
-  function syncViewer(){ if(current) $("bigAdd").textContent=isPicked(current)?"Remove from my colours":"Add to my colours"; }
-  function closeViewer(){ $("viewer").className="overlay"; current=null; }
+  function syncViewer(){
+    if(current) $("bigAdd").textContent=isPicked(current)?"Remove from my colours":"Add to my colours";
+    else if(curPat) $("bigAdd").textContent=pat===curPat.id?"Remove this pattern":(pat!==null?"Use this pattern instead":"Choose this pattern");
+  }
+  function closeViewer(){ $("viewer").className="overlay"; current=null; curPat=null; }
   function openCmp(){ renderSelection(); $("cmp").className="overlay show"; }
   function closeCmp(){ $("cmp").className="overlay"; }
 
   $("bigAdd").onclick=function(){
+    if(curPat){ var on=pat!==curPat.id; setPat(on?curPat.id:null); if(on) closeViewer(); return; }
     var was=isPicked(current);
     if(!toggle(current)){ $("bigMsg").textContent="You can compare up to four colours. Remove one to add another."; return; }
     if(!was) closeViewer();
@@ -237,7 +341,7 @@
   $("cmp").onclick=function(e){ if(e.target===$("cmp")) closeCmp(); };
   $("barGo").onclick=openCmp;
   $("cmpMore").onclick=closeCmp;
-  $("clear").onclick=function(){ picked=[]; renderGrid(); renderSelection(); closeCmp(); };
+  $("clear").onclick=function(){ picked=[]; pat=null; renderGrid(); if($("pgrid").children.length) renderPGrid(); renderSelection(); closeCmp(); };
   $("copy").onclick=function(){
     var text=listText(), box=$("copybox");
     function fallback(){ box.value=text; box.className="copybox show"; box.focus(); box.select();
@@ -248,7 +352,12 @@
       },fallback);
     } else fallback();
   };
-  document.addEventListener("keydown",function(e){ if(e.key==="Escape"){ if(current) closeViewer(); else closeCmp(); } });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"){ if(current||curPat) closeViewer(); else closeCmp(); } });
+  $("tabC").onclick=function(){ setMode("colours"); };
+  $("tabP").onclick=function(){ setMode("patterns"); };
+  var pt; $("pq").oninput=function(){ clearTimeout(pt); var v=this.value; pt=setTimeout(function(){ pq=v.trim(); renderPGrid(); },150); };
+  $("pTotal").textContent=PATTERNS.length;
+  if(/patterns/i.test(location.hash)) setMode("patterns");
   var t; $("q").oninput=function(){ clearTimeout(t); var v=this.value; t=setTimeout(function(){ q=v.trim(); renderGrid(); },150); };
 
   renderChips(); renderGrid(); renderSelection();

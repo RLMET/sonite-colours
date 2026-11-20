@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sonite colour picker | Middle Earth Tiles</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{
+    --olive:#464330; --green:#1C3A1E; --bright:#5C9D2F; --grey:#69685B;
+    --cream:#F5F7F0; --line:#DEDFD6; --white:#fff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:Aptos,"Segoe UI",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:var(--olive);background:var(--white);line-height:1.45}
+  .wrap{max-width:1100px;margin:0 auto;padding:20px 16px 110px}
+  h1{font-size:1.6rem;margin:0 0 6px;color:var(--green);font-weight:700}
+  .intro{margin:0 0 18px;color:var(--grey);font-size:1rem;max-width:640px}
+
+  /* filters */
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+  .chip{border:1px solid var(--line);background:var(--white);color:var(--olive);padding:8px 14px;border-radius:999px;font:inherit;font-size:.95rem;cursor:pointer}
+  .chip[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:var(--white)}
+
+  /* selection */
+  .selection{display:none;background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:16px;margin:0 0 22px}
+  .selection.show{display:block}
+  .selection h2{font-size:1.15rem;margin:0 0 4px;color:var(--green)}
+  .selection .hint{margin:0 0 12px;color:var(--grey);font-size:.92rem}
+  .compare{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .slot{position:relative;background:var(--white);border:1px solid var(--line);border-radius:8px;padding:6px}
+  .slot img{width:100%;height:auto;display:block;border-radius:4px;cursor:zoom-in}
+  .slot .remove{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--white);color:var(--olive);font-size:18px;line-height:28px;cursor:pointer}
+  .slot.empty{display:flex;align-items:center;justify-content:center;min-height:120px;color:var(--grey);font-size:.9rem;text-align:center;background:transparent;border-style:dashed}
+  .actions{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .btn{display:inline-block;background:var(--bright);color:var(--white);border:0;border-radius:6px;padding:12px 18px;font:inherit;font-weight:600;font-size:1rem;cursor:pointer;text-decoration:none}
+  .btn.secondary{background:var(--white);color:var(--olive);border:1px solid var(--line);font-weight:500}
+
+  /* grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+  .card{position:relative;background:var(--white);border:1px solid var(--line);border-radius:8px;padding:6px;cursor:pointer;transition:box-shadow .15s}
+  .card:hover{box-shadow:0 2px 10px rgba(0,0,0,.08)}
+  .card img{width:100%;height:auto;display:block;border-radius:4px}
+  .card .tag{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.92);font-size:.75rem;padding:2px 8px;border-radius:999px;color:var(--grey)}
+  .card.picked{outline:3px solid var(--bright);outline-offset:-1px}
+  .card .tick{display:none;position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:var(--bright);color:#fff;text-align:center;line-height:28px;font-weight:700}
+  .card.picked .tick{display:block}
+
+  .note{margin:26px 0 0;color:var(--grey);font-size:.88rem}
+
+  /* bottom bar */
+  .bar{position:fixed;left:0;right:0;bottom:0;background:var(--green);color:var(--white);padding:12px 16px;display:none;align-items:center;justify-content:space-between;gap:10px;z-index:20}
+  .bar.show{display:flex}
+  .bar .btn{background:var(--white);color:var(--green);padding:10px 14px}
+
+  /* large view */
+  .viewer{position:fixed;inset:0;background:rgba(28,58,30,.88);display:none;align-items:center;justify-content:center;z-index:30;padding:16px}
+  .viewer.show{display:flex}
+  .panel{background:var(--white);border-radius:10px;max-width:560px;width:100%;max-height:100%;overflow:auto;padding:14px}
+  .zoombox{overflow:auto;border-radius:6px;background:var(--white);max-height:70vh}
+  .zoombox img{display:block;width:100%;height:auto;cursor:zoom-in}
+  .zoombox.zoomed img{width:200%;max-width:none;cursor:zoom-out}
+  .panel .meta{margin:10px 0 0;font-size:1.05rem}
+  .panel .meta b{color:var(--green)}
+  .panel .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  .msg{margin:10px 0 0;color:#8a5a00;font-size:.92rem;min-height:1.2em}
+
+  @media (max-width:640px){
+    h1{font-size:1.35rem}
+    .compare{grid-template-columns:repeat(2,1fr)}
+    .grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Choose your Sonite colours</h1>
+  <p class="intro">Tap a colour to see it larger. Add up to four to see them side by side, then ask us for samples of the ones you like.</p>
+
+  <div class="filters" id="filters" role="group" aria-label="Show collection"></div>
+
+  <section class="selection" id="selection" aria-live="polite">
+    <h2>Your colours, side by side</h2>
+    <p class="hint">Tap a colour to see it larger. Use the cross to remove it.</p>
+    <div class="compare" id="compare"></div>
+    <div class="actions">
+      <a class="btn" id="request" href="#">Request samples of these colours</a>
+      <button class="btn secondary" id="clear" type="button">Clear selection</button>
+    </div>
+  </section>
+
+  <div class="grid" id="grid"></div>
+
+  <p class="note">Colours are photographs of real samples and are a guide only. Screens vary, so please ask us for a physical sample before you choose.</p>
+</div>
+
+<div class="bar" id="bar">
+  <span id="barText"></span>
+  <button class="btn" id="barGo" type="button">See side by side</button>
+</div>
+
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Colour detail">
+  <div class="panel">
+    <div class="zoombox" id="zoombox"><img id="bigImg" alt=""></div>
+    <p class="meta" id="bigMeta"></p>
+    <div class="row">
+      <button class="btn" id="bigAdd" type="button">Add to my colours</button>
+      <button class="btn secondary" id="bigZoom" type="button">Zoom in</button>
+      <button class="btn secondary" id="bigClose" type="button">Close</button>
+    </div>
+    <p class="msg" id="bigMsg"></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var EMAIL = "sales@middleearthtiles.co.nz";
+  var MAX = 4;
+  var COLOURS = [
+    {"series":"Prime","code":"11S-132","name":"Dawn","file":"sonite-prime-11s-132-dawn.jpg"},
+    {"series":"Prime","code":"61S-321","name":"Gerenium","file":"sonite-prime-61s-321-gerenium.jpg"},
+    {"series":"Lite","code":"TLS-541","name":"Fresh Water","file":"sonite-lite-tls-541-fresh-water.jpg"},
+    {"series":"Lite","code":"MLS-966","name":"Shiny Black","file":"sonite-lite-mls-966-shiny-black.jpg"},
+    {"series":"Pool","code":"61S-50P","name":"Miami Blue","file":"sonite-pool-61s-50p-miami-blue.jpg"},
+    {"series":"Lite Husk","code":"839","name":"Walnut","file":"sonite-lite-husk-839-walnut.jpg"}
+  ];
+  var COLLECTIONS = ["All","Prime","Lite","Lite Husk","Pool"];
+
+  var picked = [];          // codes, in order chosen
+  var filter = "All";
+  var current = null;       // colour open in viewer
+
+  function $(id){ return document.getElementById(id); }
+  function byCode(c){ for (var i=0;i<COLOURS.length;i++){ if (COLOURS[i].code===c) return COLOURS[i]; } return null; }
+  function src(c){ return "swatches/" + c.file; }
+  function alt(c){ return "Sonite " + c.series + " mosaic, colour " + c.code + " " + c.name; }
+  function isPicked(c){ return picked.indexOf(c.code) !== -1; }
+
+  function renderFilters(){
+    var box = $("filters"); box.innerHTML = "";
+    COLLECTIONS.forEach(function(name){
+      var b = document.createElement("button");
+      b.className = "chip"; b.type = "button"; b.textContent = name;
+      b.setAttribute("aria-pressed", name===filter ? "true" : "false");
+      b.onclick = function(){ filter = name; renderFilters(); renderGrid(); };
+      box.appendChild(b);
+    });
+  }
+
+  function renderGrid(){
+    var grid = $("grid"); grid.innerHTML = "";
+    COLOURS.forEach(function(c){
+      if (filter !== "All" && c.series !== filter) return;
+      var d = document.createElement("div");
+      d.className = "card" + (isPicked(c) ? " picked" : "");
+      d.tabIndex = 0;
+      d.setAttribute("role","button");
+      d.setAttribute("aria-label", c.code + " " + c.name + ", " + c.series);
+      d.innerHTML = '<span class="tag"></span><span class="tick">&#10003;</span><img loading="lazy">';
+      d.querySelector(".tag").textContent = c.series;
+      var im = d.querySelector("img"); im.src = src(c); im.alt = alt(c);
+      d.onclick = function(){ openViewer(c); };
+      d.onkeydown = function(e){ if (e.key==="Enter"||e.key===" "){ e.preventDefault(); openViewer(c); } };
+      grid.appendChild(d);
+    });
+  }
+
+  function renderSelection(){
+    var sel = $("selection"), cmp = $("compare");
+    sel.className = "selection" + (picked.length ? " show" : "");
+    cmp.innerHTML = "";
+    picked.forEach(function(code){
+      var c = byCode(code);
+      var s = document.createElement("div"); s.className = "slot";
+      s.innerHTML = '<img><button class="remove" type="button" aria-label="Remove">&times;</button>';
+      var im = s.querySelector("img"); im.src = src(c); im.alt = alt(c);
+      im.onclick = function(){ openViewer(c); };
+      s.querySelector(".remove").onclick = function(){ toggle(c); };
+      cmp.appendChild(s);
+    });
+    for (var i=picked.length;i<MAX && picked.length>0;i++){
+      var e = document.createElement("div"); e.className = "slot empty";
+      e.textContent = "Add another colour"; cmp.appendChild(e);
+    }
+    $("request").href = mailto();
+    var bar = $("bar");
+    bar.className = "bar" + (picked.length ? " show" : "");
+    $("barText").textContent = picked.length + (picked.length===1 ? " colour chosen" : " colours chosen");
+  }
+
+  function mailto(){
+    var lines = picked.map(function(code){ var c = byCode(code); return "- Sonite " + c.series + " " + c.code + " " + c.name; });
+    var body = "Hello Middle Earth Tiles,\n\nPlease could I have samples of these Sonite colours:\n\n" + lines.join("\n") +
+      "\n\nMy name:\nPhone:\nDelivery address:\nAbout my project:\n\nThank you";
+    return "mailto:" + EMAIL + "?subject=" + encodeURIComponent("Sonite sample request") + "&body=" + encodeURIComponent(body);
+  }
+
+  function toggle(c){
+    var i = picked.indexOf(c.code);
+    if (i !== -1){ picked.splice(i,1); }
+    else {
+      if (picked.length >= MAX){ return false; }
+      picked.push(c.code);
+    }
+    renderGrid(); renderSelection(); syncViewer();
+    return true;
+  }
+
+  function openViewer(c){
+    current = c;
+    $("bigImg").src = src(c); $("bigImg").alt = alt(c);
+    $("bigMeta").innerHTML = "";
+    var b = document.createElement("b"); b.textContent = c.code + " " + c.name;
+    $("bigMeta").appendChild(b);
+    $("bigMeta").appendChild(document.createTextNode("  Sonite " + c.series + " mosaic"));
+    $("zoombox").className = "zoombox"; $("bigZoom").textContent = "Zoom in";
+    $("bigMsg").textContent = "";
+    syncViewer();
+    $("viewer").className = "viewer show";
+    $("bigClose").focus();
+  }
+  function syncViewer(){
+    if (!current) return;
+    $("bigAdd").textContent = isPicked(current) ? "Remove from my colours" : "Add to my colours";
+  }
+  function closeViewer(){ $("viewer").className = "viewer"; current = null; }
+
+  $("bigAdd").onclick = function(){
+    var wasPicked = isPicked(current);
+    if (!toggle(current)){
+      $("bigMsg").textContent = "You can compare up to four colours. Remove one to add another.";
+      return;
+    }
+    if (!wasPicked){ closeViewer(); }
+  };
+  $("bigZoom").onclick = function(){
+    var z = $("zoombox");
+    var on = z.className.indexOf("zoomed") === -1;
+    z.className = "zoombox" + (on ? " zoomed" : "");
+    $("bigZoom").textContent = on ? "Zoom out" : "Zoom in";
+  };
+  $("bigImg").onclick = function(){ $("bigZoom").onclick(); };
+  $("bigClose").onclick = closeViewer;
+  $("viewer").onclick = function(e){ if (e.target === $("viewer")) closeViewer(); };
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeViewer(); });
+  $("clear").onclick = function(){ picked = []; renderGrid(); renderSelection(); };
+  $("barGo").onclick = function(){ $("selection").scrollIntoView({behavior:"smooth", block:"start"}); };
+
+  renderFilters(); renderGrid(); renderSelection();
+})();
+</script>
+</body>
+</html>

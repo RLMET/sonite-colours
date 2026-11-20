@@ -36,6 +36,8 @@
   .bar{position:fixed;left:0;right:0;bottom:0;background:var(--green);color:var(--white);padding:10px 16px;display:none;align-items:center;justify-content:space-between;gap:10px;z-index:20}
   .bar.show{display:flex}
   .bar .btn{background:var(--white);color:var(--green);padding:10px 14px}
+  .bar .btn.ghost{background:transparent;color:var(--white);border:1px solid var(--white)}
+  .barBtns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
   .overlay{position:fixed;inset:0;background:rgba(28,58,30,.88);display:none;align-items:center;justify-content:center;z-index:30;padding:12px}
   .overlay.show{display:flex}
   .panel{background:var(--white);border-radius:10px;width:100%;max-height:100%;overflow:auto;padding:14px}
@@ -119,7 +121,8 @@
 
 <div class="bar" id="bar">
   <span id="barText"></span>
-  <button class="btn" id="barGo" type="button">Compare side by side</button>
+  <span class="barBtns"><button class="btn ghost" id="barSkip" type="button" hidden>Skip, compare</button>
+  <button class="btn" id="barGo" type="button">Compare side by side</button></span>
 </div>
 
 <div class="overlay" id="viewer" role="dialog" aria-modal="true" aria-label="Colour detail">
@@ -293,7 +296,9 @@
     if(picked.length) parts.push(picked.length+(picked.length===1?" colour":" colours"));
     if(pat!==null) parts.push("1 pattern");
     $("barText").textContent=parts.join(" and ")+" chosen";
-    $("barGo").textContent=pat!==null?"See my choices":"Compare side by side";
+    var needC=pat!==null&&!picked.length, needP=picked.length&&pat===null;
+    $("barGo").textContent=needC?"Now choose colours":(needP?"Now choose a pattern":"See my choices");
+    $("barSkip").style.display=(needC||needP)?"":"none";
     $("copybox").className="copybox"; $("cmpMsg").textContent="";
   }
   function toggle(c){
@@ -339,7 +344,20 @@
   $("bigClose").onclick=closeViewer;
   $("viewer").onclick=function(e){ if(e.target===$("viewer")) closeViewer(); };
   $("cmp").onclick=function(e){ if(e.target===$("cmp")) closeCmp(); };
-  $("barGo").onclick=openCmp;
+  $("barGo").onclick=function(){
+    if(pat!==null&&!picked.length){ setMode("colours"); scrollTo(0,0); }
+    else if(picked.length&&pat===null){ setMode("patterns"); scrollTo(0,0); }
+    else openCmp();
+  };
+  $("barSkip").onclick=openCmp;
+  $("request").onclick=function(){
+    var text=listText(), href=mailto();
+    try{ if(navigator.clipboard) navigator.clipboard.writeText(text).catch(function(){}); }catch(e){}
+    $("cmpMsg").textContent="Your list is copied. Paste it into the form below, or into an email to sales@middleearthtiles.co.nz";
+    $("copybox").value=text; $("copybox").className="copybox show";
+    try{ window.top.location.href=href; }catch(e){ window.open(href,"_blank"); }
+    return false;
+  };
   $("cmpMore").onclick=closeCmp;
   $("clear").onclick=function(){ picked=[]; pat=null; renderGrid(); if($("pgrid").children.length) renderPGrid(); renderSelection(); closeCmp(); };
   $("copy").onclick=function(){

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terracotta samples | Middle Earth Tiles</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{--olive:#464330;--green:#1C3A1E;--bright:#5C9D2F;--grey:#69685B;--cream:#F5F7F0;--line:#DEDFD6;--white:#fff;--clay:#B5653F}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:Aptos,"Segoe UI",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:var(--olive);background:var(--white);line-height:1.45}
+  .wrap{max-width:1100px;margin:0 auto;padding:18px 16px 110px}
+  h1{font-size:1.6rem;margin:0 0 6px;color:var(--green);font-weight:700}
+  h2{font-size:1.15rem;margin:22px 0 4px;color:var(--green)}
+  .intro{margin:0 0 14px;color:var(--grey);font-size:1rem;max-width:680px}
+  .steps{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 0 16px;padding:0;list-style:none;font-size:.92rem;color:var(--olive)}
+  .steps li b{display:inline-block;width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;text-align:center;line-height:22px;font-size:.8rem;margin-right:6px}
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px;position:sticky;top:0;background:#fff;padding:8px 0;z-index:5}
+  .chip{border:1px solid var(--line);background:var(--white);color:var(--olive);padding:8px 14px;border-radius:999px;font:inherit;font-size:.95rem;cursor:pointer}
+  .chip[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:var(--white)}
+  .blurb{color:var(--grey);font-size:.93rem;margin:0 0 12px;max-width:720px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .card{position:relative;background:var(--white);border:1px solid var(--line);border-radius:8px;padding:6px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+  .card:hover{box-shadow:0 2px 10px rgba(0,0,0,.08)}
+  .card .pic{width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:var(--cream);border-radius:4px;overflow:hidden}
+  .card .pic img{width:100%;height:100%;object-fit:cover;display:block}
+  .card .pic svg{width:86%;height:86%}
+  .card .nm{display:block;margin:6px 3px 0;font-size:.88rem;line-height:1.25;font-weight:600}
+  .card .sz{display:block;margin:2px 3px 2px;font-size:.8rem;color:var(--grey)}
+  .card.picked{outline:3px solid var(--bright);outline-offset:-1px}
+  .card .tick{display:none;position:absolute;top:9px;right:9px;width:26px;height:26px;border-radius:50%;background:var(--bright);color:#fff;text-align:center;line-height:26px;font-weight:700}
+  .card.picked .tick{display:block}
+  .sec{display:none}.sec.on{display:block}
+  .note{margin:22px 0 0;color:var(--grey);font-size:.88rem}
+  .btn{display:inline-block;background:var(--bright);color:var(--white);border:0;border-radius:6px;padding:12px 18px;font:inherit;font-weight:600;font-size:1rem;cursor:pointer;text-decoration:none;text-align:center}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.secondary{background:var(--white);color:var(--olive);border:1px solid var(--line)}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:var(--green);color:var(--white);padding:10px 16px;display:none;align-items:center;justify-content:space-between;gap:10px;z-index:20}
+  .bar.on{display:flex}
+  .bar .mini{display:flex;gap:6px;align-items:center;overflow:hidden}
+  .bar .mini span{width:34px;height:34px;border-radius:4px;background:var(--cream);display:inline-flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto}
+  .bar .mini span img{width:100%;height:100%;object-fit:cover}
+  .bar .mini span svg{width:80%;height:80%}
+  .overlay{position:fixed;inset:0;background:rgba(28,58,30,.88);display:none;align-items:flex-start;justify-content:center;z-index:30;padding:12px;overflow:auto}
+  .overlay.on{display:flex}
+  .panel{background:var(--white);border-radius:10px;width:100%;max-width:820px;padding:16px;margin:auto}
+  .panel h2{margin-top:4px}
+  .pick{display:grid;grid-template-columns:72px 1fr auto;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding:10px 0}
+  .pick .th{width:72px;height:72px;border-radius:6px;background:var(--cream);display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .pick .th img{width:100%;height:100%;object-fit:cover}.pick .th svg{width:84%;height:84%}
+  .pick b{display:block}.pick small{color:var(--grey)}
+  .pick select{margin-top:6px;padding:7px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:.9rem;max-width:100%}
+  .x{background:none;border:0;color:var(--grey);font-size:1.4rem;cursor:pointer;padding:4px 8px}
+  .form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+  .form label{display:flex;flex-direction:column;font-size:.9rem;gap:4px}
+  .form label span{color:#a33}
+  .form input,.form select,.form textarea{padding:10px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:1rem;color:var(--olive)}
+  .form textarea{min-height:70px}
+  .form .full{grid-column:1/-1}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .msg{margin:10px 0 0;color:#8a5a00;font-size:.92rem;min-height:1.2em}
+  .hint{margin:6px 0 12px;color:var(--grey);font-size:.92rem}
+  .cardimg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:6px;cursor:zoom-in}
+  .done{text-align:center;padding:30px 10px}
+  .fullguide{position:fixed;inset:0;z-index:100;background:#fff;overflow:auto}
+  .fgbar{position:sticky;top:0;padding:8px;background:rgba(255,255,255,.95);border-bottom:1px solid var(--line)}
+  .fullguide img{width:100%;max-width:1400px;display:block;margin:0 auto}
+  @media(max-width:620px){.form{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Order terracotta samples</h1>
+  <p class="intro">Choose up to four samples. They are free and we post them to you anywhere in New Zealand.</p>
+  <ol class="steps"><li><b>1</b>Pick up to 4 samples</li><li><b>2</b>See your sample guide</li><li><b>3</b>Tell us where to send them</li></ol>
+
+  <div class="tabs" role="tablist">
+    <button class="chip" data-sec="bpk" aria-pressed="true">Natural terracotta</button>
+    <button class="chip" data-sec="col" aria-pressed="false">Laterite and coloured clay</button>
+    <button class="chip" data-sec="rel" aria-pressed="false">Relief wall tiles</button>
+  </div>
+
+  <div class="sec on" id="sec-bpk">
+    <p class="blurb">Classic natural terracotta in the warm red clay colour. Pavers, tiles, bricks and ventilation blocks. The drawings show each shape to scale against the others.</p>
+    <div id="bpk"></div>
+  </div>
+  <div class="sec" id="sec-col">
+    <p class="blurb">Unglazed clay with the colour right through the tile. Choose a colour here. Once it is in your list, you can tell us which shape and size you have in mind, from 25 mm mosaic squares up to 200 x 200 mm, and up to 300 x 300 mm in Laterite.</p>
+    <div class="grid" id="col"></div>
+  </div>
+  <div class="sec" id="sec-rel">
+    <p class="blurb">Unglazed clay relief tiles that add shadow and pattern to feature walls.</p>
+    <div class="grid" id="rel"></div>
+  </div>
+  <p class="note">Natural clay varies from tile to tile, and from batch to batch. Your sample shows the character of the tile rather than an exact match to every piece. Questions? Call 09 360 2638 or email sales@middleearthtiles.co.nz.</p>
+</div>
+
+<div class="bar" id="bar">
+  <div class="mini" id="mini"></div>
+  <div><span id="cnt"></span> <button class="btn" id="go" type="button">Request my samples</button></div>
+</div>
+
+<div class="overlay" id="ov" role="dialog" aria-modal="true">
+  <div class="panel">
+    <div id="step1">
+      <h2>Your samples</h2>
+      <div id="picks"></div>
+      <h2>Your sample guide</h2>
+      <p class="hint">This is what we will send you with your samples. Tap it to see it full size.</p>
+      <div id="guide"></div>
+      <h2>Where should we send them?</h2>
+      <form class="form" id="sform" novalidate>
+        <label>Name <span>*</span><input name="name" autocomplete="name" required></label>
+        <label>Email <span>*</span><input name="email" type="email" autocomplete="email" required></label>
+        <label>Phone <span>*</span><input name="phone" type="tel" autocomplete="tel" required></label>
+        <label>Company or practice<input name="company" autocomplete="organization"></label>
+        <label class="full">Delivery address for your samples <span>*</span><textarea name="address" autocomplete="street-address" required></textarea></label>
+        <label>What is the project? <span>*</span><select name="project" required><option value="">Choose one</option><option>Home</option><option>Outdoor or landscape</option><option>Hospitality or retail</option><option>Office or commercial</option><option>Council or public space</option><option>Other</option></select></label>
+        <label>Where will the tiles go? <span>*</span><input name="where" placeholder="e.g. kitchen floor, courtyard" required></label>
+        <label>Roughly how many square metres?<input name="area" inputmode="decimal" placeholder="e.g. 25"></label>
+        <label>When do you need them?<select name="when"><option value="">Choose one</option><option>Within a month</option><option>1 to 3 months</option><option>3 to 6 months</option><option>Just exploring</option></select></label>
+        <label class="full">Anything else we should know?<textarea name="notes"></textarea></label>
+        <div class="hp" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
+      </form>
+      <div class="row">
+        <button class="btn" id="send" type="button">Send my request</button>
+        <button class="btn secondary" id="back" type="button">Back to the tiles</button>
+      </div>
+      <p class="msg" id="msg"></p>
+    </div>
+    <div class="done" id="done" hidden>
+      <h2>Thank you, your request is on its way</h2>
+      <p id="doneText"></p>
+      <div class="row" style="justify-content:center"><button class="btn secondary" id="close" type="button">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var DATA = {"colours":[{"id":"col-brown","name":"Brown","img":"https://pictures.rs-cdn.com/CF-a3242004-15e0-42f9-9f8a-a737c52854d0/fit=cover,gravity=auto,width=480,height=480/decd20593d6f06075a86277ebfb5a3eb.jpg"},{"id":"col-cocoa","name":"Cocoa","img":"https://pictures.rs-cdn.com/CF-a3242005-26fa-462a-b635-ad74a8a1db63/fit=cover,gravity=auto,width=480,height=480/ae961c1431a25780be12afb9e7d92956.jpg"},{"id":"col-granite","name":"Granite","img":"https://pictures.rs-cdn.com/CF-a3242006-1061-4233-8ceb-a16c81684909/fit=cover,gravity=auto,width=480,height=480/92351274b9e5d5f20135b29af069422c.jpg"},{"id":"col-kaolin","name":"Kaolin","img":"https://pictures.rs-cdn.com/CF-a3242007-5d4d-48aa-8bfa-9fbb13a6919d/fit=cover,gravity=auto,width=480,height=480/0d34a765358227cdb6506588bc4aa354.jpg"},{"id":"col-laterite","name":"Laterite","img":"https://pictures.rs-cdn.com/CF-a3242008-7b77-41b9-abb2-7bcd7ea7cd9f/fit=cover,gravity=auto,width=480,height=480/8f7d593af5f65e047f06f67bdeb50977.jpg"},{"id":"col-light-black","name":"Light Black","img":"https://pictures.rs-cdn.com/CF-a3242009-7431-45ad-b883-77038ca31923/fit=cover,gravity=auto,width=480,height=480/922ab3b7d3d96b3f3d01c204dd1dbcb0.jpg"},{"id":"col-light-blue","name":"Light Blue","img":"https://pictures.rs-cdn.com/CF-a324200a-6020-4a10-ac42-16a36291120c/fit=cover,gravity=auto,width=480,height=480/afc584c219fc7032f15f6d86f94ee5c5.jpg"},{"id":"col-light-grey","name":"Light Grey","img":"https://pictures.rs-cdn.com/CF-a324200b-4120-4b8d-8d35-dd0b21e70f95/fit=cover,gravity=auto,width=480,height=480/838a00b8ed70e9bb27e8f9aa28345a38.jpg"},{"id":"col-light-green","name":"Light Green","img":"https://pictures.rs-cdn.com/CF-a324200c-47d9-456f-8caf-ab0ca729efb8/fit=cover,gravity=auto,width=480,height=480/a7db7019ab2641c900566329b18c287b.jpg"},{"id":"col-light-pink","name":"Light Pink","img":"https://pictures.rs-cdn.com/CF-a324200d-4f44-4c44-a7f5-b5a678f6fae1/fit=cover,gravity=auto,width=480,height=480/ceeffb06901387bacbb59c9983a95945.jpg"},{"id":"col-light-purple","name":"Light Purple","img":"https://pictures.rs-cdn.com/CF-a324200e-5249-4377-bee9-cf49446ef48c/fit=cover,gravity=auto,width=480,height=480/e1aec946bedd95d52c83a48a8bd569a7.jpg"},{"id":"col-light-yellow","name":"Light Yellow","img":"https://pictures.rs-cdn.com/CF-a324200f-ae06-445c-943c-92063be2a62a/fit=cover,gravity=auto,width=480,height=480/0a2710dd9ffe460fd50565a70db42746.jpg"},{"id":"col-pale-blue","name":"Pale Blue","img":"https://pictures.rs-cdn.com/CF-a3242010-b7e7-493e-b13b-83e17c239504/fit=cover,gravity=auto,width=480,height=480/0f6e54f7c916ada9c75a40bad9b47ba3.jpg"},{"id":"col-sandstone","name":"Sandstone","img":"https://pictures.rs-cdn.com/CF-a3242011-e73b-4d82-97bd-3eae829dfc1c/fit=cover,gravity=auto,width=480,height=480/1f3361c5a72052fd4ee5173c7529a992.jpg"},{"id":"col-terracotta","name":"Terracotta","img":"https://pictures.rs-cdn.com/CF-a3242012-faa3-4f95-ae1d-9cc8f003aa8f/fit=cover,gravity=auto,width=480,height=480/cafe8f7d1e62696a3aea7d42fef29945.jpg"}],"shapes":[{"code":"LT-411","kind":"square","label":"Square 25 x 25 mm","w":25,"h":25,"big":false},{"code":"LT-422","kind":"square","label":"Square 50 x 50 mm","w":50,"h":50,"big":false},{"code":"LT-433","kind":"square","label":"Square 75 x 75 mm","w":75,"h":75,"big":false},{"code":"LT-444","kind":"square","label":"Square 100 x 100 mm","w":100,"h":100,"big":false},{"code":"LT-455","kind":"square","label":"Square 125 x 125 mm","w":125,"h":125,"big":false},{"code":"LT-466","kind":"square","label":"Square 150 x 150 mm","w":150,"h":150,"big":false},{"code":"LT-477","kind":"square","label":"Square 175 x 175 mm","w":175,"h":175,"big":false},{"code":"LT-488","kind":"square","label":"Square 200 x 200 mm","w":200,"h":200,"big":false},{"code":"LT-41212","kind":"square","label":"Square 300 x 300 mm","w":300,"h":300,"big":true},{"code":"LT-412","kind":"rect","label":"Rectangle 50 x 25 mm","w":50,"h":25,"big":false},{"code":"LT-414","kind":"rect","label":"Rectangle 100 x 25 mm","w":100,"h":25,"big":false},{"code":"LT-424","kind":"rect","label":"Rectangle 100 x 50 mm","w":100,"h":50,"big":false},{"code":"LT-426","kind":"rect","label":"Rectangle 150 x 50 mm","w":150,"h":50,"big":false},{"code":"LT-428","kind":"rect","label":"Rectangle 200 x 50 mm","w":200,"h":50,"big":false},{"code":"LT-436","kind":"rect","label":"Rectangle 150 x 75 mm","w":150,"h":75,"big":false},{"code":"LT-438","kind":"rect","label":"Rectangle 200 x 75 mm","w":200,"h":75,"big":false},{"code":"LT-448","kind":"rect","label":"Rectangle 200 x 100 mm","w":200,"h":100,"big":false},{"code":"LT-4812","kind":"rect","label":"Rectangle 300 x 200 mm","w":300,"h":200,"big":true},{"code":"LT-322","kind":"triangle","label":"Triangle 50 mm","w":50,"h":50,"big":false},{"code":"LT-333","kind":"triangle","label":"Triangle 75 mm","w":75,"h":75,"big":false},{"code":"LT-344","kind":"triangle","label":"Triangle 100 mm","w":100,"h":100,"big":false},{"code":"LT-366","kind":"triangle","label":"Triangle 150 mm","w":150,"h":150,"big":false},{"code":"LT-388","kind":"triangle","label":"Triangle 200 mm","w":200,"h":200,"big":false},{"code":"LT-8621","kind":"octagon_dot","label":"Octagon with corner insert 150 mm","w":150,"h":150,"big":false},{"code":"LT-8821","kind":"octagon_dot","label":"Octagon with corner insert 200 mm","w":200,"h":200,"big":false},{"code":"LT-8624","kind":"octagon","label":"Octagon 150 mm","w":150,"h":150,"big":false},{"code":"LT-8824","kind":"octagon","label":"Octagon 200 mm","w":200,"h":200,"big":false},{"code":"LT-606","kind":"hexagon","label":"Hexagon 150 mm","w":150,"h":150,"big":false},{"code":"LT-605","kind":"hexagon","label":"Hexagon 125 mm","w":125,"h":125,"big":false},{"code":"LT-604","kind":"hexagon","label":"Hexagon 100 mm","w":100,"h":100,"big":false},{"code":"LT-600","kind":"hexagon_long","label":"Long hexagon 150 x 75 mm","w":150,"h":75,"big":false},{"code":"LT-011","kind":"circle","label":"Circle 25 mm","w":25,"h":25,"big":false},{"code":"LT-022","kind":"circle","label":"Circle 50 mm","w":50,"h":50,"big":false},{"code":"LT-033","kind":"circle","label":"Circle 75 mm","w":75,"h":75,"big":false},{"code":"LT-F01","kind":"special","label":"Proven\u00e7al 150 mm","w":150,"h":150,"big":false},{"code":"LT-H01","kind":"special","label":"Bow tie 150 mm","w":150,"h":150,"big":false},{"code":"LT-B01","kind":"diamond","label":"Diamond 50 mm","w":50,"h":50,"big":false},{"code":"LT-F02","kind":"special","label":"Proven\u00e7al insert 75 mm","w":75,"h":75,"big":false},{"code":"LT-C41","kind":"special","label":"Tapered 100 mm","w":100,"h":100,"big":false},{"code":"LT-C42","kind":"special","label":"Fan 100 mm","w":100,"h":100,"big":false},{"code":"LT-426L","kind":"special","label":"Chevron end left 150 x 50 mm","w":150,"h":50,"big":false},{"code":"LT-426M","kind":"special","label":"Chevron middle 150 x 50 mm","w":150,"h":50,"big":false},{"code":"LT-426R","kind":"special","label":"Chevron end right 150 x 50 mm","w":150,"h":50,"big":false}],"relief":[{"id":"rel-w32","code":"W 32","name":"Pyramid relief","img":"https://pictures.rs-cdn.com/CF-a3244f2e-b3a4-4d88-8baf-5a360794945c/fit=cover,gravity=auto,width=480,height=640/90d63b97874d635ceb7f36f99ed974ca.jpg"},{"id":"rel-w33","code":"W 33","name":"Large pyramid relief","img":"https://pictures.rs-cdn.com/CF-a3244f2f-e574-447e-a97e-daffad77cfa0/fit=cover,gravity=auto,width=480,height=640/1c49e151b1651303e3964df7e239b81a.jpg"},{"id":"rel-w34","code":"W 34","name":"Curved wave relief","img":"https://pictures.rs-cdn.com/CF-a3244f31-035b-4ce8-be64-d9a409aeed6d/fit=cover,gravity=auto,width=480,height=640/c958688ed4e0421158d234e8e46e888c.jpg"},{"id":"rel-w35","code":"W 35","name":"Sculpted curve relief","img":"https://pictures.rs-cdn.com/CF-a3244f32-bdf4-473b-91dc-04a837151594/fit=cover,gravity=auto,width=480,height=640/e30f4bae51681b516aff84bbe89e07b4.jpg"},{"id":"rel-w36","code":"W 36","name":"Circle and bar relief","img":"https://pictures.rs-cdn.com/CF-a3244f33-cb93-4ac2-b559-e45a62bda3f0/fit=cover,gravity=auto,width=480,height=640/2dd1430d65b3d21233d72f040e7cb0bc.jpg"},{"id":"rel-w38","code":"W 38","name":"Crescent relief","img":"https://pictures.rs-cdn.com/CF-a3244f35-498d-4e44-8a41-cc7c6f303905/fit=cover,gravity=auto,width=480,height=640/5b274c32bff4f28d932cc472201a7c1d.jpg"},{"id":"rel-w39","code":"W 39","name":"Lattice relief","img":"https://pictures.rs-cdn.com/CF-a3244f36-c4e9-4138-b4ae-f6d3cc223241/fit=cover,gravity=auto,width=480,height=640/a901f8a6f6e98c351350bf94ca2b6407.jpg"},{"id":"rel-w40","code":"W 40","name":"Ornate scroll relief","img":"https://pictures.rs-cdn.com/CF-a3244f38-38a1-4854-b6e3-8cf871a2e543/fit=cover,gravity=auto,width=480,height=640/f2172c0657d0170f3251c473adf5561e.jpg"},{"id":"rel-w41","code":"W 41","name":"Medallion relief","img":"https://pictures.rs-cdn.com/CF-a3244f39-4561-4929-908e-3fcc74265159/fit=cover,gravity=auto,width=480,height=640/d116dae5be66490e7ad4cd63aaf49bd5.jpg"},{"id":"rel-w42","code":"W 42","name":"Faceted relief","img":"https://pictures.rs-cdn.com/CF-a3244f3a-7825-4781-aeb9-513f9d3901cb/fit=cover,gravity=auto,width=480,height=640/850568657f039bb72cd20858566ea7b5.jpg"},{"id":"rel-w43","code":"W 43","name":"Concentric circle relief","img":"https://pictures.rs-cdn.com/CF-a3244f3b-9983-4985-b9ab-616b472d2f9a/fit=cover,gravity=auto,width=480,height=640/d9c07cda030694f42dc3fe85ecb9d37a.jpg"},{"id":"rel-w45","code":"W 45","name":"Floral relief","img":"https://pictures.rs-cdn.com/CF-a3244f3c-b769-46b7-b9ef-bf60793cc317/fit=cover,gravity=auto,width=480,height=640/ea5ebdf63b555f654887fe25e5d2d7ee.jpg"},{"id":"rel-w51","code":"W 51","name":"Diamond relief","img":"https://pictures.rs-cdn.com/CF-a3244f3d-e08c-4493-8048-74923f6968b5/fit=cover,gravity=auto,width=480,height=640/90c357bd0ca82bf56f843f72d133875d.jpg"},{"id":"rel-w52","code":"W 52","name":"Geometric relief","img":"https://pictures.rs-cdn.com/CF-a3244f3f-16bd-41e1-893b-89db2118b745/fit=cover,gravity=auto,width=480,height=640/379de4837242dd1cb1d19adb6725c888.jpg"},{"id":"rel-w53","code":"W 53","name":"Stepped bar relief","img":"https://pictures.rs-cdn.com/CF-a3244f40-aa1c-475d-8cc7-7ca05d1f5a9c/fit=cover,gravity=auto,width=480,height=640/a636ba5243f13309bef4c2c52a23db3f.jpg"},{"id":"rel-w54","code":"W 54","name":"Elongated hexagon relief","img":"https://pictures.rs-cdn.com/CF-a3244f41-d134-4cd3-a1ea-12f153ff2521/fit=cover,gravity=auto,width=480,height=640/25dc294f7695c4e9887b1d4141ef6301.jpg"},{"id":"rel-w55","code":"W 55","name":"Circle and arch relief","img":"https://pictures.rs-cdn.com/CF-a3244f43-53d7-4b8f-951f-8980d2801ad0/fit=cover,gravity=auto,width=480,height=640/9dceeba5a43227837f2acc9c1b0f31d6.jpg"},{"id":"rel-w56","code":"W 56","name":"Moulded strip relief","img":"https://pictures.rs-cdn.com/CF-a3244f44-8f45-4df2-80ed-c0a5316cfc22/fit=cover,gravity=auto,width=480,height=640/b63fe60a66be97cbf52389c389b800a9.jpg"}],"bpk":[{"id":"bpk-p-30030020","group":"Pavers","name":"Square paver","size":"300 x 300 x 20 mm","kind":"square","w":300,"h":300,"t":20,"note":"","cin7":"I-BPK-30030020-TER"},{"id":"bpk-p-30015020","group":"Pavers","name":"Rectangular paver","size":"300 x 150 x 20 mm","kind":"rect","w":300,"h":150,"t":20,"note":"","cin7":"I-BPK-30015020-TER"},{"id":"bpk-p-20020040","group":"Pavers","name":"Heavy square paver","size":"200 x 200 x 40 mm","kind":"square","w":200,"h":200,"t":40,"note":"","cin7":"BPK-P-20020040-TER"},{"id":"bpk-r-30010012","group":"Floor and wall tiles","name":"Long rectangle","size":"300 x 100 x 12 mm","kind":"rect","w":300,"h":100,"t":12,"note":"","cin7":"I-BPK-R-30010012-TER"},{"id":"bpk-f-26014010","group":"Floor and wall tiles","name":"Rectangle","size":"260 x 140 x 10 mm","kind":"rect","w":260,"h":140,"t":10,"note":"","cin7":"I-BPK-F-26014010-TER"},{"id":"bpk-r-2307012","group":"Floor and wall tiles","name":"Slim rectangle","size":"230 x 70 x 12 mm","kind":"rect","w":230,"h":70,"t":12,"note":"","cin7":"I-BPK-R2307012-TER"},{"id":"bpk-r-2307012-buf","group":"Floor and wall tiles","name":"Slim rectangle, Buff","size":"230 x 70 x 12 mm","kind":"rect","w":230,"h":70,"t":12,"note":"Buff colour","cin7":"I-BPK-R-2307012-BUF"},{"id":"bpk-s-20020012","group":"Floor and wall tiles","name":"Square","size":"200 x 200 x 12 mm","kind":"square","w":200,"h":200,"t":12,"note":"","cin7":"I-BPK-S-20020012-TER"},{"id":"bpk-o-20020012","group":"Floor and wall tiles","name":"Octagon","size":"200 x 200 x 12 mm","kind":"octagon","w":200,"h":200,"t":12,"note":"","cin7":"I-BPK-O-20020012-TER"},{"id":"bpk-r-20010012","group":"Floor and wall tiles","name":"Rectangle","size":"200 x 100 x 12 mm","kind":"rect","w":200,"h":100,"t":12,"note":"","cin7":"I-BPK-R-20010012-TER"},{"id":"bpk-r-160608","group":"Floor and wall tiles","name":"Subway","size":"160 x 60 x 8 mm","kind":"rect","w":160,"h":60,"t":8,"note":"","cin7":"I-BPK-R160608-TER"},{"id":"bpk-s-15015012","group":"Floor and wall tiles","name":"Square","size":"150 x 150 x 12 mm","kind":"square","w":150,"h":150,"t":12,"note":"","cin7":"I-BPK-S-15015010-TER"},{"id":"bpk-h-15015010","group":"Floor and wall tiles","name":"Hexagon","size":"150 x 150 x 10 mm","kind":"hexagon","w":150,"h":150,"t":10,"note":"","cin7":"I-BPK-H-15015010-TER"},{"id":"bpk-s-1001008","group":"Floor and wall tiles","name":"Square","size":"100 x 100 x 8 mm","kind":"square","w":100,"h":100,"t":8,"note":"","cin7":"I-BPK-S-1001008-TER"},{"id":"bpk-st-20010010","group":"Floor and wall tiles","name":"Step tread","size":"200 x 100 x 10 mm","kind":"rect","w":200,"h":100,"t":10,"note":"","cin7":"I-BPK-ST-20010012-TER"},{"id":"bpk-b-30014050-ant","group":"Bricks","name":"Antique brick","size":"300 x 140 x 50 mm","kind":"brick","w":300,"h":140,"t":50,"note":"","cin7":"I-BPK-B-30014050-ANT"},{"id":"bpk-b-2208070","group":"Bricks","name":"Hollow brick","size":"220 x 80 x 70 mm","kind":"brick","w":220,"h":80,"t":70,"note":"","cin7":"I-BPK-B-2208070-Hollow-TER"},{"id":"bpk-b-20010050","group":"Bricks","name":"Brick","size":"200 x 100 x 50 mm","kind":"brick","w":200,"h":100,"t":50,"note":"","cin7":"I-BPK-B-20010050-TER"},{"id":"bpk-b-20010050-ant","group":"Bricks","name":"Antique brick","size":"200 x 100 x 50 mm","kind":"brick","w":200,"h":100,"t":50,"note":"","cin7":"I-BPK-B-20010050-ANT"},{"id":"bpk-b-2005040","group":"Bricks","name":"Slim brick","size":"200 x 50 x 40 mm","kind":"brick","w":200,"h":50,"t":40,"note":"","cin7":"I-BPK-B-2005040-TER"},{"id":"bpk-ab-zz","group":"Ventilation blocks","name":"Zigzag block","size":"310 x 200 mm","kind":"rect","w":310,"h":200,"t":null,"note":"","cin7":"I-BPK-AB-ZZ-12010-TER"},{"id":"bpk-ab-8x","group":"Ventilation blocks","name":"Eight cross block","size":"250 x 120 mm","kind":"rect","w":250,"h":120,"t":null,"note":"","cin7":"I-BPK-BB8X-25128-TER"},{"id":"bpk-ab-brk4l","group":"Ventilation blocks","name":"Four hole brick, large","size":"250 x 120 mm","kind":"rect","w":250,"h":120,"t":null,"note":"","cin7":"I-BPK-AB-BRK4LGE-2501208-TER"},{"id":"bpk-ab-brk4m","group":"Ventilation blocks","name":"Four hole brick, medium","size":"250 x 120 mm","kind":"rect","w":250,"h":120,"t":null,"note":"","cin7":"I-BPK-AB-BRK4MED-2501206-TER"},{"id":"bpk-ab-circles","group":"Ventilation blocks","name":"Circles block","size":"200 x 200 mm","kind":"square","w":200,"h":200,"t":null,"note":"","cin7":"I-BPK-BB-202008-TER"},{"id":"bpk-ab-eye","group":"Ventilation blocks","name":"Eye of Good Fortune block","size":"165 x 165 mm","kind":"square","w":165,"h":165,"t":null,"note":"","cin7":"I-BPK-BB-16516565-TER"}],"big_colour":"Laterite"};
+(function(){
+  var MAX=4, EMAIL="sales@middleearthtiles.co.nz";
+  var API=(new URLSearchParams(location.search).get("api")||"https://web-production-d7c2c.up.railway.app").replace(/\/+$/,"");
+  var CLAY="#B5653F", EDGE="#7A3E22";
+  function $(id){return document.getElementById(id);}
+  var picked=[]; // {type,id,shape}
+  var byId={};
+  DATA.bpk.forEach(function(b){byId[b.id]={type:"bpk",o:b};});
+  DATA.colours.forEach(function(c){byId[c.id]={type:"col",o:c};});
+  DATA.relief.forEach(function(r){byId[r.id]={type:"rel",o:r};});
+
+  // ---- shape drawings (same rules as the sample guide) ----
+  function pts(kind,w,h){
+    var p=[];
+    if(kind==="octagon"||kind==="octagon_dot"){var c=kind==="octagon"?0.29:0.12; p=[[c,0],[1-c,0],[1,c],[1,1-c],[1-c,1],[c,1],[0,1-c],[0,c]];}
+    else if(kind==="hexagon"){p=[[0.25,0.07],[0.75,0.07],[1,0.5],[0.75,0.93],[0.25,0.93],[0,0.5]];}
+    else if(kind==="hexagon_long"){p=[[0.2,0],[0.8,0],[1,0.5],[0.8,1],[0.2,1],[0,0.5]];}
+    else if(kind==="triangle"){p=[[0,1],[1,1],[1,0]];}
+    else if(kind==="diamond"){p=[[0.3,0],[1,0],[0.7,1],[0,1]];}
+    else {p=[[0,0],[1,0],[1,1],[0,1]];}
+    return p;
+  }
+  function svg(o,scaleTo){
+    var w=o.w,h=o.h,big=scaleTo||Math.max(w,h),S=100,pad=4;
+    var sw=(S-2*pad)*w/big, sh=(S-2*pad)*h/big, x0=(S-sw)/2, y0=(S-sh)/2;
+    var k=o.kind, inner="";
+    if(k==="circle"){inner='<ellipse cx="50" cy="50" rx="'+sw/2+'" ry="'+sh/2+'" fill="'+CLAY+'" stroke="'+EDGE+'" stroke-width="1.2"/>';}
+    else{
+      var poly=pts(k,w,h).map(function(q){return (x0+q[0]*sw).toFixed(1)+","+(y0+q[1]*sh).toFixed(1);}).join(" ");
+      inner='<polygon points="'+poly+'" fill="'+CLAY+'" stroke="'+EDGE+'" stroke-width="1.2"/>';
+      var hole='fill="#F5F7F0" stroke="'+EDGE+'" stroke-width="0.8"';
+      if(k==="block_holes"){for(var i=0;i<4;i++){inner+='<rect x="'+(x0+sw*(0.08+i*0.23))+'" y="'+(y0+sh*0.25)+'" width="'+(sw*0.16)+'" height="'+(sh*0.5)+'" '+hole+'/>';}}
+      if(k==="block_circles"){[[.3,.3],[.7,.3],[.3,.7],[.7,.7]].forEach(function(c){inner+='<circle cx="'+(x0+sw*c[0])+'" cy="'+(y0+sh*c[1])+'" r="'+(sw*0.15)+'" '+hole+'/>';});}
+      if(k==="block_eye"){inner+='<ellipse cx="'+(x0+sw/2)+'" cy="'+(y0+sh/2)+'" rx="'+(sw*0.36)+'" ry="'+(sh*0.2)+'" '+hole+'/><circle cx="'+(x0+sw/2)+'" cy="'+(y0+sh/2)+'" r="'+(sw*0.1)+'" fill="'+CLAY+'"/>';}
+      if(k==="block_cross"){for(var j=0;j<8;j++){var cx=x0+sw*(0.125+(j%4)*0.25),cy=y0+sh*(j<4?0.3:0.7),a=sw*0.06;inner+='<path d="M'+(cx-a)+' '+(cy-a)+'L'+(cx+a)+' '+(cy+a)+'M'+(cx+a)+' '+(cy-a)+'L'+(cx-a)+' '+(cy+a)+'" stroke="#F5F7F0" stroke-width="'+(sw*0.035)+'" stroke-linecap="round"/>';}}
+      if(k==="block_zigzag"){var d="M"+(x0+sw*0.08)+" "+(y0+sh*0.35);for(var z=1;z<=8;z++){d+="L"+(x0+sw*(0.08+z*0.105))+" "+(y0+sh*(z%2?0.65:0.35));}inner+='<path d="'+d+'" fill="none" stroke="#F5F7F0" stroke-width="'+(sh*0.12)+'" stroke-linejoin="round"/>';}
+      if(k==="octagon_dot"){inner+='<rect x="'+(x0+sw*0.94)+'" y="'+(y0+sh*0.94)+'" width="'+(sw*0.12)+'" height="'+(sh*0.12)+'" transform="rotate(45 '+(x0+sw)+' '+(y0+sh)+')" fill="#F5F7F0" stroke="'+EDGE+'" stroke-width="0.8"/>';}
+      if(k==="brick"&&o.t){inner+='<line x1="'+x0+'" y1="'+(y0+sh*0.5)+'" x2="'+(x0+sw)+'" y2="'+(y0+sh*0.5)+'" stroke="'+EDGE+'" stroke-width="0.5" opacity=".4"/>';}
+    }
+    return '<svg viewBox="0 0 100 100" aria-hidden="true">'+inner+'</svg>';
+  }
+  function thumb(entry,el){
+    var o=entry.o;
+    if(entry.type==="bpk"){el.innerHTML=svg(o,310);return;}
+    var im=new Image(); im.alt=o.name; im.loading="lazy"; im.referrerPolicy="no-referrer"; im.src=o.img; el.innerHTML=""; el.appendChild(im);
+  }
+  function title(e){var o=e.o; if(e.type==="bpk")return o.name; if(e.type==="col")return o.name; return o.name+" "+o.code;}
+  function sub(e){var o=e.o; if(e.type==="bpk")return o.size+(o.group?", "+o.group.toLowerCase():""); if(e.type==="col")return "Coloured clay"; return "Relief wall tile";}
+
+  // ---- build the grids ----
+  function makeCard(id){
+    var e=byId[id], b=document.createElement("button"); b.type="button"; b.className="card"; b.dataset.id=id;
+    b.innerHTML='<span class="pic"></span><span class="nm"></span><span class="sz"></span><span class="tick">&#10003;</span>';
+    thumb(e,b.querySelector(".pic")); b.querySelector(".nm").textContent=title(e);
+    b.querySelector(".sz").textContent=e.type==="bpk"?e.o.size:(e.type==="rel"?e.o.code:"Choose shape later");
+    b.onclick=function(){toggle(id);}; return b;
+  }
+  var groups={}; DATA.bpk.forEach(function(b){(groups[b.group]=groups[b.group]||[]).push(b.id);});
+  Object.keys(groups).forEach(function(g){var h=document.createElement("h2"); h.textContent=g; $("bpk").appendChild(h); var gr=document.createElement("div"); gr.className="grid"; groups[g].forEach(function(id){gr.appendChild(makeCard(id));}); $("bpk").appendChild(gr);});
+  DATA.colours.forEach(function(c){$("col").appendChild(makeCard(c.id));});
+  DATA.relief.forEach(function(r){$("rel").appendChild(makeCard(r.id));});
+
+  document.querySelectorAll(".tabs .chip").forEach(function(c){c.onclick=function(){
+    document.querySelectorAll(".tabs .chip").forEach(function(x){x.setAttribute("aria-pressed",x===c?"true":"false");});
+    document.querySelectorAll(".sec").forEach(function(s){s.classList.toggle("on",s.id==="sec-"+c.dataset.sec);});
+  };});
+
+  function idx(id){for(var i=0;i<picked.length;i++)if(picked[i].id===id)return i;return -1;}
+  function toggle(id){
+    var i=idx(id);
+    if(i>=0)picked.splice(i,1);
+    else{ if(picked.length>=MAX){alert("You can choose up to "+MAX+" samples. Remove one to add another.");return;} picked.push({id:id,shape:""}); }
+    refresh();
+  }
+  function refresh(){
+    document.querySelectorAll(".card").forEach(function(c){c.classList.toggle("picked",idx(c.dataset.id)>=0);});
+    $("bar").classList.toggle("on",picked.length>0);
+    $("cnt").textContent=picked.length+" of "+MAX+" chosen";
+    var m=$("mini"); m.innerHTML=""; picked.forEach(function(p){var s=document.createElement("span"); thumb(byId[p.id],s); m.appendChild(s);});
+  }
+  function shapesFor(colour){return DATA.shapes.filter(function(s){return !s.big||colour===DATA.big_colour;});}
+  function renderPicks(){
+    var box=$("picks"); box.innerHTML="";
+    picked.forEach(function(p){
+      var e=byId[p.id], r=document.createElement("div"); r.className="pick";
+      r.innerHTML='<div class="th"></div><div><b></b><small></small></div><button class="x" type="button" aria-label="Remove">&times;</button>';
+      thumb(e,r.querySelector(".th")); r.querySelector("b").textContent=title(e); r.querySelector("small").textContent=sub(e);
+      if(e.type==="col"){
+        var sel=document.createElement("select"); sel.innerHTML='<option value="">Shape and size: not sure yet</option>';
+        shapesFor(e.o.name).forEach(function(s){var o=document.createElement("option"); o.value=s.code; o.textContent=s.label; if(p.shape===s.code)o.selected=true; sel.appendChild(o);});
+        sel.onchange=function(){p.shape=sel.value; renderGuide();};
+        r.children[1].appendChild(sel);
+      }
+      r.querySelector(".x").onclick=function(){toggle(p.id); if(!picked.length){closeOv();return;} renderPicks(); renderGuide();};
+      box.appendChild(r);
+    });
+  }
+  var guideTimer=null;
+  function payloadPicks(){return picked.map(function(p){return {id:p.id,shape:p.shape};});}
+  function renderGuide(){
+    clearTimeout(guideTimer);
+    guideTimer=setTimeout(function(){
+      var g=$("guide"); g.innerHTML='<p class="hint">Making your sample guide...</p>';
+      fetch(API+"/terracotta/sample-card",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({picks:payloadPicks()})})
+        .then(function(r){if(!r.ok)throw 0;return r.blob();})
+        .then(function(b){var u=URL.createObjectURL(b),im=document.createElement("img"); im.className="cardimg"; im.alt="Your terracotta sample guide"; im.src=u; im.onclick=function(){openFull(u);}; g.innerHTML=""; g.appendChild(im);})
+        .catch(function(){g.innerHTML='<p class="hint">Your sample guide could not be shown just now. We will still email it to you with your request.</p>';});
+    },350);
+  }
+  function openFull(u){var o=document.createElement("div"); o.className="fullguide"; o.innerHTML='<div class="fgbar"><button type="button" class="btn">Close</button></div><img alt="Your sample guide, full size">'; o.querySelector("img").src=u; o.querySelector("button").onclick=function(){o.parentNode.removeChild(o);}; document.body.appendChild(o);}
+  function openOv(){ $("step1").hidden=false; $("done").hidden=true; $("msg").textContent=""; renderPicks(); renderGuide(); $("ov").classList.add("on"); $("ov").scrollTop=0; }
+  function closeOv(){ $("ov").classList.remove("on"); }
+  $("go").onclick=openOv; $("back").onclick=closeOv;
+  $("close").onclick=function(){picked=[]; refresh(); closeOv(); document.getElementById("sform").reset();};
+  $("send").onclick=function(){
+    var f=$("sform"), d={}; new FormData(f).forEach(function(v,k){d[k]=v;});
+    var need=[["name","your name"],["email","your email"],["phone","your phone number"],["address","a delivery address"],["project","what the project is"],["where","where the tiles will go"]];
+    for(var i=0;i<need.length;i++){ if(!(d[need[i][0]]||"").trim()){ $("msg").textContent="Please add "+need[i][1]+"."; return; } }
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email.trim())){ $("msg").textContent="Please check your email address."; return; }
+    d.picks=payloadPicks();
+    $("send").disabled=true; $("msg").textContent="Sending...";
+    fetch(API+"/terracotta/sample-request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})
+      .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+      .then(function(x){
+        $("send").disabled=false;
+        if(!x.ok||!x.j.ok){ $("msg").textContent=(x.j&&x.j.error)||("Something went wrong. Please email "+EMAIL+"."); return; }
+        $("step1").hidden=true; $("done").hidden=false;
+        $("doneText").textContent=x.j.sent===false?"We have your request and will be in touch shortly. Your confirmation email may take a little longer than usual.":"We have emailed you a copy with your sample guide. We will be in touch shortly to confirm when your samples are on their way.";
+      })
+      .catch(function(){ $("send").disabled=false; $("msg").textContent="We could not send that just now. Please try again, or email "+EMAIL+"."; });
+  };
+})();
+</script>
+</body>
+</html>

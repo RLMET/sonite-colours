@@ -50,12 +50,12 @@
   .pick .th{width:72px;height:72px;border-radius:6px;background:var(--cream);display:flex;align-items:center;justify-content:center;overflow:hidden}
   .pick .th img{width:100%;height:100%;object-fit:cover}.pick .th svg{width:84%;height:84%}
   .pick b{display:block}.pick small{color:var(--grey)}
-  .pick select{margin-top:6px;padding:7px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:.9rem;max-width:100%}
+  .pick select{display:block;margin-top:6px;padding:7px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:.9rem;max-width:100%}
   .x{background:none;border:0;color:var(--grey);font-size:1.4rem;cursor:pointer;padding:4px 8px}
   .form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
-  .form label{display:flex;flex-direction:column;font-size:.9rem;gap:4px}
+  .form label{display:block;font-size:.9rem}
   .form label span{color:#a33}
-  .form input,.form select,.form textarea{padding:10px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:1rem;color:var(--olive)}
+  .form input,.form select,.form textarea{display:block;width:100%;margin-top:4px;padding:10px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:1rem;color:var(--olive)}
   .form textarea{min-height:70px}
   .form .full{grid-column:1/-1}
   .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
@@ -143,7 +143,7 @@ var DATA = {"colours":[{"id":"col-brown","name":"Brown","img":"https://pictures.
 (function(){
   var MAX=4, EMAIL="sales@middleearthtiles.co.nz";
   var API=(new URLSearchParams(location.search).get("api")||"https://web-production-d7c2c.up.railway.app").replace(/\/+$/,"");
-  var CLAY="#B5653F", EDGE="#7A3E22";
+  var CLAY="#B5653F", EDGE="#7A3E22", BUFF="#D9B98C";
   function $(id){return document.getElementById(id);}
   var picked=[]; // {type,id,shape}
   var byId={};
@@ -163,13 +163,14 @@ var DATA = {"colours":[{"id":"col-brown","name":"Brown","img":"https://pictures.
     return p;
   }
   function svg(o,scaleTo){
+    var FILL=(o.note==="Buff colour")?BUFF:CLAY;
     var w=o.w,h=o.h,big=scaleTo||Math.max(w,h),S=100,pad=4;
     var sw=(S-2*pad)*w/big, sh=(S-2*pad)*h/big, x0=(S-sw)/2, y0=(S-sh)/2;
     var k=o.kind, inner="";
-    if(k==="circle"){inner='<ellipse cx="50" cy="50" rx="'+sw/2+'" ry="'+sh/2+'" fill="'+CLAY+'" stroke="'+EDGE+'" stroke-width="1.2"/>';}
+    if(k==="circle"){inner='<ellipse cx="50" cy="50" rx="'+sw/2+'" ry="'+sh/2+'" fill="'+FILL+'" stroke="'+EDGE+'" stroke-width="1.2"/>';}
     else{
       var poly=pts(k,w,h).map(function(q){return (x0+q[0]*sw).toFixed(1)+","+(y0+q[1]*sh).toFixed(1);}).join(" ");
-      inner='<polygon points="'+poly+'" fill="'+CLAY+'" stroke="'+EDGE+'" stroke-width="1.2"/>';
+      inner='<polygon points="'+poly+'" fill="'+FILL+'" stroke="'+EDGE+'" stroke-width="1.2"/>';
       var hole='fill="#F5F7F0" stroke="'+EDGE+'" stroke-width="0.8"';
       if(k==="block_holes"){for(var i=0;i<4;i++){inner+='<rect x="'+(x0+sw*(0.08+i*0.23))+'" y="'+(y0+sh*0.25)+'" width="'+(sw*0.16)+'" height="'+(sh*0.5)+'" '+hole+'/>';}}
       if(k==="block_circles"){[[.3,.3],[.7,.3],[.3,.7],[.7,.7]].forEach(function(c){inner+='<circle cx="'+(x0+sw*c[0])+'" cy="'+(y0+sh*c[1])+'" r="'+(sw*0.15)+'" '+hole+'/>';});}
@@ -187,7 +188,7 @@ var DATA = {"colours":[{"id":"col-brown","name":"Brown","img":"https://pictures.
     var im=new Image(); im.alt=o.name; im.loading="lazy"; im.referrerPolicy="no-referrer"; im.src=o.img; el.innerHTML=""; el.appendChild(im);
   }
   function title(e){var o=e.o; if(e.type==="bpk")return o.name; if(e.type==="col")return o.name; return o.name+" "+o.code;}
-  function sub(e){var o=e.o; if(e.type==="bpk")return o.size+(o.group?", "+o.group.toLowerCase():""); if(e.type==="col")return "Coloured clay"; return "Relief wall tile";}
+  function sub(e){var o=e.o; if(e.type==="bpk")return o.size+(o.group?", "+o.group.toLowerCase():""); if(e.type==="col")return e.o.name===DATA.big_colour?"Laterite clay":"Coloured clay"; return "Relief wall tile";}
 
   // ---- build the grids ----
   function makeCard(id){

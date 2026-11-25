@@ -12,7 +12,7 @@
     if (pic) {
       var s = pic.querySelector('source');
       var set = s && (s.getAttribute('data-srcset') || s.getAttribute('srcset'));
-      if (set) u = set.split(',').pop().trim().split(' ')[0] || u;
+      if (set) u = set.split(/,\s+/).pop().trim().split(' ')[0] || u;
     }
     // RocketSpark gallery images: ask the image server for the whole photo, uncropped
     var m = u.match(/^(https:\/\/pictures\.rs-cdn\.com\/[^/]+\/)[^/]+\/([^/]+)$/);
@@ -36,7 +36,7 @@
   css.textContent =
     '.met-lb{position:fixed;inset:0;z-index:2147483000;background:rgba(15,15,12,.94);display:flex;align-items:center;justify-content:center;touch-action:none;opacity:0;transition:opacity .2s}' +
     '.met-lb.on{opacity:1}' +
-    '.met-lb img{max-width:100vw;max-height:100vh;max-height:100dvh;object-fit:contain;display:block;user-select:none;-webkit-user-select:none;transition:transform .2s}' +
+    '.met-lb img{width:100vw;height:100vh;height:100dvh;object-fit:contain;display:block;user-select:none;-webkit-user-select:none;transition:transform .2s}' +
     '.met-lb button{position:absolute;background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:999px;width:44px;height:44px;font:28px/44px Arial,sans-serif;cursor:pointer;padding:0}' +
     '.met-lb .x{top:12px;right:12px}' +
     '.met-lb .p{left:10px;top:50%;margin-top:-22px}.met-lb .n{right:10px;top:50%;margin-top:-22px}' +

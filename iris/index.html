@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iris glazed tile samples | Middle Earth Tiles</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{--olive:#464330;--green:#1C3A1E;--bright:#5C9D2F;--grey:#69685B;--cream:#F5F7F0;--line:#DEDFD6;--white:#fff}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:Aptos,"Segoe UI",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:var(--olive);background:var(--white);line-height:1.45}
+  .wrap{max-width:1100px;margin:0 auto;padding:18px 16px 110px}
+  h1{font-size:1.6rem;margin:0 0 6px;color:var(--green);font-weight:700}
+  h2{font-size:1.15rem;margin:22px 0 4px;color:var(--green)}
+  h3{font-size:1rem;margin:14px 0 6px;color:var(--green)}
+  .intro{margin:0 0 14px;color:var(--grey);font-size:1rem;max-width:720px}
+  .steps{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 0 16px;padding:0;list-style:none;font-size:.92rem}
+  .steps li b{display:inline-block;width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;text-align:center;line-height:22px;font-size:.8rem;margin-right:6px}
+  .filters{position:sticky;top:0;background:#fff;padding:8px 0 6px;z-index:5;border-bottom:1px solid var(--line);margin-bottom:12px}
+  .frow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 6px}
+  .frow .lab{font-size:.85rem;color:var(--grey);margin-right:4px;min-width:64px}
+  .chip{border:1px solid var(--line);background:var(--white);color:var(--olive);padding:6px 12px;border-radius:999px;font:inherit;font-size:.88rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .chip i{display:inline-block;width:12px;height:12px;border-radius:50%;border:1px solid rgba(0,0,0,.15)}
+  .chip[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:var(--white)}
+  .count{font-size:.85rem;color:var(--grey);margin:0 0 8px}
+  .banner{background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0 0 12px;font-size:.93rem;display:none}
+  .banner.on{display:flex;gap:10px;align-items:center}
+  .banner img{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:4px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+  .card{position:relative;background:var(--white);border:1px solid var(--line);border-radius:8px;padding:8px 6px 6px;cursor:pointer;text-align:center;font:inherit;color:inherit}
+  .card:hover{box-shadow:0 2px 10px rgba(0,0,0,.08)}
+  .card img{width:100%;aspect-ratio:1/1;object-fit:contain;display:block}
+  .card .nm{display:block;margin:6px 2px 0;font-size:.88rem;line-height:1.2;font-weight:600}
+  .card .rg{display:block;margin:2px 2px 0;font-size:.76rem;color:var(--grey)}
+  .card.picked{outline:3px solid var(--bright);outline-offset:-1px}
+  .card .tick{display:none;position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:var(--bright);color:#fff;line-height:26px;font-weight:700}
+  .card.picked .tick{display:block}
+  .note{margin:22px 0 0;color:var(--grey);font-size:.88rem;max-width:760px}
+  .btn{display:inline-block;background:var(--bright);color:var(--white);border:0;border-radius:6px;padding:12px 18px;font:inherit;font-weight:600;font-size:1rem;cursor:pointer;text-decoration:none;text-align:center}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.secondary{background:var(--white);color:var(--olive);border:1px solid var(--line)}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:var(--green);color:var(--white);padding:10px 16px;display:none;align-items:center;justify-content:space-between;gap:10px;z-index:20}
+  .bar.on{display:flex}
+  .bar .mini{display:flex;gap:6px;align-items:center;overflow:hidden}
+  .bar .mini img{width:36px;height:36px;object-fit:contain;flex:0 0 auto}
+  .overlay{position:fixed;inset:0;background:rgba(28,58,30,.88);display:none;align-items:flex-start;justify-content:center;z-index:30;padding:12px;overflow:auto}
+  .overlay.on{display:flex}
+  .panel{background:var(--white);border-radius:10px;width:100%;max-width:860px;padding:16px;margin:auto}
+  .panel h2{margin-top:4px}
+  .pick{border-bottom:1px solid var(--line);padding:12px 0}
+  .phead{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center}
+  .phead img{width:64px;height:64px;object-fit:contain}
+  .phead b{display:block}.phead small{color:var(--grey)}
+  .x{background:none;border:0;color:var(--grey);font-size:1.4rem;cursor:pointer;padding:4px 8px}
+  .fmt{margin:8px 0 0 74px}
+  .fmt .q{font-size:.9rem;margin:0 0 6px}
+  .groups{display:flex;flex-wrap:wrap;gap:6px}
+  .groups .chip{padding:5px 10px;font-size:.84rem}
+  .groups .chip img{width:28px;height:28px;object-fit:contain;background:#fff;border-radius:3px}
+  .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:8px}
+  .fbtn{border:1px solid var(--line);border-radius:6px;background:#fff;padding:6px;cursor:pointer;font:inherit;color:inherit;text-align:center}
+  .fbtn img{width:100%;aspect-ratio:1/1;object-fit:contain;display:block}
+  .fbtn b{display:block;font-size:.8rem;margin-top:4px;line-height:1.2}
+  .fbtn small{display:block;font-size:.72rem;color:var(--grey);line-height:1.2}
+  .fbtn[aria-pressed="true"]{outline:3px solid var(--bright);outline-offset:-1px}
+  .chosen{font-size:.88rem;color:var(--green);margin-top:6px}
+  .form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+  .form label{display:block;font-size:.9rem}
+  .form label span{color:#a33}
+  .form input,.form select,.form textarea{display:block;width:100%;margin-top:4px;padding:10px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:1rem;color:var(--olive)}
+  .form textarea{min-height:70px}
+  .form .full{grid-column:1/-1}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .msg{margin:10px 0 0;color:#8a5a00;font-size:.92rem;min-height:1.2em}
+  .hint{margin:6px 0 12px;color:var(--grey);font-size:.92rem}
+  .cardimg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:6px;cursor:zoom-in}
+  .done{text-align:center;padding:30px 10px}
+  .fullguide{position:fixed;inset:0;z-index:100;background:#fff;overflow:auto}
+  .fgbar{position:sticky;top:0;padding:8px;background:rgba(255,255,255,.95);border-bottom:1px solid var(--line)}
+  .fullguide img{width:100%;max-width:1400px;display:block;margin:0 auto}
+  @media(max-width:620px){.form{grid-template-columns:1fr}.grid{grid-template-columns:repeat(3,1fr)}.fmt{margin-left:0}.frow .lab{min-width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Order Iris samples</h1>
+  <p class="intro">Hand-glazed tiles made in Thailand, in more than 180 colours and over 60 formats. Choose up to four colours, tell us the format you have in mind, and we post the samples free anywhere in New Zealand.</p>
+  <ol class="steps"><li><b>1</b>Pick up to 4 colours</li><li><b>2</b>Choose a format for each, if you know it</li><li><b>3</b>Tell us where to send them</li></ol>
+
+  <div class="banner" id="banner"></div>
+
+  <div class="filters">
+    <div class="frow" id="ranges"><span class="lab">Range</span></div>
+    <div class="frow" id="families"><span class="lab">Colour</span></div>
+  </div>
+  <p class="count" id="count"></p>
+  <div class="grid" id="grid"></div>
+  <p class="note">Glazes are applied by hand, so each tile varies a little, and colours on screen are a guide only. We send the real glazed piece in your colour, or the closest one we hold, with a sample guide showing exactly what you chose. If you need the exact colour in hand before you commit, ask us and we will get on to it. Questions? Call 09 360 2638 or email sales@middleearthtiles.co.nz.</p>
+</div>
+
+<div class="bar" id="bar">
+  <div class="mini" id="mini"></div>
+  <div><span id="cnt"></span> <button class="btn" id="go" type="button">Request my samples</button></div>
+</div>
+
+<div class="overlay" id="ov" role="dialog" aria-modal="true">
+  <div class="panel">
+    <div id="step1">
+      <h2>Your samples</h2>
+      <p class="hint">Choose a format for each colour if you know it. If not, leave it and we will help.</p>
+      <div id="picks"></div>
+      <h2>Your sample guide</h2>
+      <p class="hint">This is what we will send you with your samples. Tap it to see it full size.</p>
+      <div id="guide"></div>
+      <h2>Where should we send them?</h2>
+      <form class="form" id="sform" novalidate>
+        <label>Name <span>*</span><input name="name" autocomplete="name" required></label>
+        <label>Email <span>*</span><input name="email" type="email" autocomplete="email" required></label>
+        <label>Phone <span>*</span><input name="phone" type="tel" autocomplete="tel" required></label>
+        <label>Company or practice<input name="company" autocomplete="organization"></label>
+        <label class="full">Delivery address for your samples <span>*</span><textarea name="address" autocomplete="street-address" required></textarea></label>
+        <label>What is the project? <span>*</span><select name="project" required><option value="">Choose one</option><option>Home</option><option>Hospitality or retail</option><option>Office or commercial</option><option>Swimming pool</option><option>Council or public space</option><option>Other</option></select></label>
+        <label>Where will the tiles go? <span>*</span><input name="where" placeholder="e.g. kitchen splashback, shower wall" required></label>
+        <label>Roughly how many square metres?<input name="area" inputmode="decimal" placeholder="e.g. 8"></label>
+        <label>When do you need them?<select name="when"><option value="">Choose one</option><option>Within a month</option><option>1 to 3 months</option><option>3 to 6 months</option><option>Just exploring</option></select></label>
+        <label class="full">Anything else we should know?<textarea name="notes"></textarea></label>
+        <div class="hp" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
+      </form>
+      <div class="row">
+        <button class="btn" id="send" type="button">Send my request</button>
+        <button class="btn secondary" id="back" type="button">Back to the colours</button>
+      </div>
+      <p class="msg" id="msg"></p>
+    </div>
+    <div class="done" id="done" hidden>
+      <h2>Thank you, your request is on its way</h2>
+      <p id="doneText"></p>
+      <div class="row" style="justify-content:center"><button class="btn secondary" id="close" type="button">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var DATA = {"colours":[{"id":"candy-almond","name":"Almond","range":"Candy gloss","family":"White and cream"},{"id":"candy-apple-green","name":"Apple Green","range":"Candy gloss","family":"Green"},{"id":"candy-aqua","name":"Aqua","range":"Candy gloss","family":"Blue"},{"id":"candy-atlantic","name":"Atlantic","range":"Candy gloss","family":"Blue"},{"id":"candy-baby-blue","name":"Baby Blue","range":"Candy gloss","family":"Blue"},{"id":"candy-bluebell","name":"Bluebell","range":"Candy gloss","family":"Blue"},{"id":"candy-brick-red","name":"Brick Red","range":"Candy gloss","family":"Red and pink"},{"id":"candy-cafe","name":"Cafe","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-camel","name":"Camel","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-candy-blue","name":"Candy Blue","range":"Candy gloss","family":"Blue"},{"id":"candy-celadon","name":"Candy Celadon","range":"Candy gloss","family":"Green"},{"id":"candy-off-white","name":"Candy Off White","range":"Candy gloss","family":"White and cream"},{"id":"candy-candy-orange","name":"Candy Orange","range":"Candy gloss","family":"Orange and yellow"},{"id":"candy-candy-red","name":"Candy Red","range":"Candy gloss","family":"Red and pink"},{"id":"candy-candy-violet","name":"Candy Violet","range":"Candy gloss","family":"Purple and lilac"},{"id":"candy-candy-white","name":"Candy White","range":"Candy gloss","family":"White and cream"},{"id":"candy-caramel","name":"Caramel","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-charcoal","name":"Charcoal","range":"Candy gloss","family":"Grey and black"},{"id":"candy-cherry","name":"Cherry","range":"Candy gloss","family":"Red and pink"},{"id":"candy-chocolate","name":"Chocolate","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-clay","name":"Clay","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-clover-green","name":"Clover Green","range":"Candy gloss","family":"Green"},{"id":"candy-corn-blue","name":"Cornflower","range":"Candy gloss","family":"Blue"},{"id":"candy-coyote","name":"Coyote","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-denim","name":"Denim","range":"Candy gloss","family":"Blue"},{"id":"candy-desert","name":"Desert","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-dusty-blue","name":"Dusty Blue","range":"Candy gloss","family":"Blue"},{"id":"candy-dusty-green","name":"Dusty Green","range":"Candy gloss","family":"Green"},{"id":"candy-earth-yellow","name":"Earth Yellow","range":"Candy gloss","family":"Orange and yellow"},{"id":"candy-foliage","name":"Foliage","range":"Candy gloss","family":"Green"},{"id":"candy-golden-clay","name":"Golden Clay","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-grape","name":"Grape","range":"Candy gloss","family":"Purple and lilac"},{"id":"candy-graphite","name":"Graphite","range":"Candy gloss","family":"Grey and black"},{"id":"candy-hazelnut","name":"Hazelnut","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-hunter-green","name":"Hunter Green","range":"Candy gloss","family":"Green"},{"id":"candy-ivory","name":"Ivory","range":"Candy gloss","family":"White and cream"},{"id":"candy-jasper","name":"Jasper","range":"Candy gloss","family":"Red and pink"},{"id":"candy-khaki","name":"Khaki","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-lapis-blue","name":"Lapis Blue","range":"Candy gloss","family":"Blue"},{"id":"candy-lavender","name":"Lavender","range":"Candy gloss","family":"Purple and lilac"},{"id":"candy-lemon","name":"Lemon","range":"Candy gloss","family":"Orange and yellow"},{"id":"candy-lichen","name":"Lichen","range":"Candy gloss","family":"Green"},{"id":"candy-mediterranean","name":"Mediterranean","range":"Candy gloss","family":"Blue"},{"id":"candy-mocha","name":"Mocha","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-moose","name":"Moose","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-moss","name":"Moss","range":"Candy gloss","family":"Green"},{"id":"candy-mustard","name":"Mustard","range":"Candy gloss","family":"Orange and yellow"},{"id":"candy-nautical","name":"Nautical","range":"Candy gloss","family":"Blue"},{"id":"candy-night-blue","name":"Night Blue","range":"Candy gloss","family":"Blue"},{"id":"candy-nude","name":"Nude","range":"Candy gloss","family":"Red and pink"},{"id":"candy-otter-green","name":"Otter Green","range":"Candy gloss","family":"Green"},{"id":"candy-persimmon","name":"Persimmon","range":"Candy gloss","family":"Red and pink"},{"id":"candy-pink","name":"Pink","range":"Candy gloss","family":"Red and pink"},{"id":"candy-pink-cadillac","name":"Pink Cadillac","range":"Candy gloss","family":"Red and pink"},{"id":"candy-pistachio","name":"Pistachio","range":"Candy gloss","family":"Green"},{"id":"candy-plum","name":"Plum","range":"Candy gloss","family":"Purple and lilac"},{"id":"candy-powder-blue","name":"Powder Blue","range":"Candy gloss","family":"Blue"},{"id":"candy-prussian","name":"Prussian","range":"Candy gloss","family":"Blue"},{"id":"candy-raccoon","name":"Raccoon","range":"Candy gloss","family":"Grey and black"},{"id":"candy-rocky-road","name":"Rocky Road","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-rose-quarts","name":"Rose Quartz","range":"Candy gloss","family":"Red and pink"},{"id":"candy-royal-blue","name":"Royal Blue","range":"Candy gloss","family":"Blue"},{"id":"candy-sahara","name":"Sahara","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-salmon","name":"Salmon","range":"Candy gloss","family":"Red and pink"},{"id":"candy-sepia","name":"Sepia","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-smokey-blue","name":"Smoky Blue","range":"Candy gloss","family":"Blue"},{"id":"candy-space-blue","name":"Space Blue","range":"Candy gloss","family":"Blue"},{"id":"candy-steel-blue","name":"Steel Blue","range":"Candy gloss","family":"Blue"},{"id":"candy-super-black","name":"Super Black","range":"Candy gloss","family":"Grey and black"},{"id":"candy-taupe","name":"Taupe","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-teal","name":"Teal","range":"Candy gloss","family":"Blue"},{"id":"candy-turquoise","name":"Turquoise","range":"Candy gloss","family":"Blue"},{"id":"candy-tuscan-tan","name":"Tuscan Tan","range":"Candy gloss","family":"Brown and beige"},{"id":"candy-ultraviolet","name":"Ultra Violet","range":"Candy gloss","family":"Purple and lilac"},{"id":"candy-ultramarine","name":"Ultramarine","range":"Candy gloss","family":"Blue"},{"id":"candy-under-sea","name":"Under Sea","range":"Candy gloss","family":"Blue"},{"id":"candy-vanilla","name":"Vanilla","range":"Candy gloss","family":"White and cream"},{"id":"candy-wasabi","name":"Wasabi","range":"Candy gloss","family":"Green"},{"id":"pantone-buttons-barley","name":"Barley","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-beach","name":"Beach","range":"Pantone matte","family":"White and cream"},{"id":"pantone-buttons-biscuit","name":"Biscuit","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-brown-1","name":"Brown 1","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-brown-2","name":"Brown 2","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-brown-3","name":"Brown 3","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-brown-sugar","name":"Brown Sugar","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-buttercup","name":"Buttercup","range":"Pantone matte","family":"Orange and yellow"},{"id":"pantone-buttons-butterscotch","name":"Butterscotch","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-cobolt-blue","name":"Cobalt Blue","range":"Pantone matte","family":"Blue"},{"id":"pantone-buttons-cool-grey-1","name":"Cool Grey 1","range":"Pantone matte","family":"Grey and black"},{"id":"pantone-buttons-cool-grey-2","name":"Cool Grey 2","range":"Pantone matte","family":"Grey and black"},{"id":"pantone-buttons-copper-tan","name":"Copper Tan","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-cotton","name":"Cotton","range":"Pantone matte","family":"White and cream"},{"id":"pantone-buttons-dark-hemlock","name":"Dark Hemlock","range":"Pantone matte","family":"Green"},{"id":"pantone-buttons-desert-fox","name":"Desert Fox","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-dolphin","name":"Dolphin","range":"Pantone matte","family":"Grey and black"},{"id":"pantone-buttons-field-drab","name":"Field Drab","range":"Pantone matte","family":"Green"},{"id":"pantone-buttons-flamingo","name":"Flamingo","range":"Pantone matte","family":"Red and pink"},{"id":"pantone-buttons-gunmetal","name":"Gunmetal","range":"Pantone matte","family":"Grey and black"},{"id":"pantone-buttons-hemlock-1","name":"Hemlock 1","range":"Pantone matte","family":"Green"},{"id":"pantone-buttons-hemlock-2","name":"Hemlock 2","range":"Pantone matte","family":"Green"},{"id":"pantone-buttons-hemlock-3","name":"Hemlock 3","range":"Pantone matte","family":"Green"},{"id":"pantone-buttons-hooker-green","name":"Hooker Green","range":"Pantone matte","family":"Green"},{"id":"pantone-buttons-hydrangea","name":"Hydrangea","range":"Pantone matte","family":"Purple and lilac"},{"id":"pantone-buttons-indian-red","name":"Indian Red","range":"Pantone matte","family":"Red and pink"},{"id":"pantone-buttons-indigo","name":"Indigo","range":"Pantone matte","family":"Blue"},{"id":"pantone-buttons-kraft","name":"Kraft","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-lilac","name":"Lilac","range":"Pantone matte","family":"Purple and lilac"},{"id":"pantone-buttons-malibu","name":"Malibu","range":"Pantone matte","family":"Blue"},{"id":"pantone-buttons-mango","name":"Mango","range":"Pantone matte","family":"Orange and yellow"},{"id":"pantone-buttons-matte-beige","name":"Matte Beige","range":"Pantone matte","family":"White and cream"},{"id":"pantone-buttons-matte-black","name":"Matte Black","range":"Pantone matte","family":"Grey and black"},{"id":"pantone-buttons-matte-celulean","name":"Matte Cerulean","range":"Pantone matte","family":"Blue"},{"id":"pantone-buttons-matte-copper","name":"Matte Copper","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-matte-dusty-blue","name":"Matte Dusty Blue","range":"Pantone matte","family":"Blue"},{"id":"pantone-buttons-matte-grape","name":"Matte Grape","range":"Pantone matte","family":"Purple and lilac"},{"id":"pantone-buttons-matte-lapis-blue","name":"Matte Lapis Blue","range":"Pantone matte","family":"Blue"},{"id":"pantone-buttons-matte-moss","name":"Matte Moss","range":"Pantone matte","family":"Green"},{"id":"pantone-buttons-matte-plum","name":"Matte Plum","range":"Pantone matte","family":"Purple and lilac"},{"id":"pantone-buttons-matte-sky-blue","name":"Matte Sky Blue","range":"Pantone matte","family":"Blue"},{"id":"pantone-buttons-matte-space-blue","name":"Matte Space Blue","range":"Pantone matte","family":"Blue"},{"id":"pantone-buttons-matte-steel-blue","name":"Matte Steel Blue","range":"Pantone matte","family":"Blue"},{"id":"pantone-buttons-matte-teal","name":"Matte Teal","range":"Pantone matte","family":"Blue"},{"id":"pantone-buttons-matte-white","name":"Matte White","range":"Pantone matte","family":"White and cream"},{"id":"pantone-buttons-mint1","name":"Mint 1","range":"Pantone matte","family":"Green"},{"id":"pantone-buttons-mint-2","name":"Mint 2","range":"Pantone matte","family":"Green"},{"id":"pantone-buttons-mint-3","name":"Mint 3","range":"Pantone matte","family":"Green"},{"id":"pantone-buttons-neo-mint","name":"Neo Mint","range":"Pantone matte","family":"Green"},{"id":"pantone-buttons-pale-blue","name":"Pale Blue","range":"Pantone matte","family":"Blue"},{"id":"pantone-buttons-peach-ivory","name":"Peach Ivory","range":"Pantone matte","family":"White and cream"},{"id":"pantone-buttons-perlino","name":"Perlino","range":"Pantone matte","family":"White and cream"},{"id":"pantone-buttons-purple-figs","name":"Purple Figs","range":"Pantone matte","family":"Purple and lilac"},{"id":"pantone-buttons-purple-grey","name":"Purple Grey","range":"Pantone matte","family":"Grey and black"},{"id":"pantone-buttons-red-clay-1","name":"Red Clay 1","range":"Pantone matte","family":"Red and pink"},{"id":"pantone-buttons-red-clay-2","name":"Red Clay 2","range":"Pantone matte","family":"Red and pink"},{"id":"pantone-buttons-red-clay-3","name":"Red Clay 3","range":"Pantone matte","family":"Red and pink"},{"id":"pantone-buttons-red-sepia","name":"Red Sepia","range":"Pantone matte","family":"Red and pink"},{"id":"pantone-buttons-rose-pink","name":"Rose Pink","range":"Pantone matte","family":"Red and pink"},{"id":"pantone-buttons-rosy-brown","name":"Rosy Brown","range":"Pantone matte","family":"Red and pink"},{"id":"pantone-buttons-rose","name":"Rosé","range":"Pantone matte","family":"Red and pink"},{"id":"pantone-buttons-rust","name":"Rust","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-safari","name":"Safari","range":"Pantone matte","family":"Green"},{"id":"pantone-buttons-saffron-yellow","name":"Saffron Yellow","range":"Pantone matte","family":"Orange and yellow"},{"id":"pantone-buttons-siberian-ice","name":"Siberian Ice","range":"Pantone matte","family":"White and cream"},{"id":"pantone-buttons-slate-black","name":"Slate Black","range":"Pantone matte","family":"Grey and black"},{"id":"pantone-buttons-steel","name":"Steel","range":"Pantone matte","family":"Grey and black"},{"id":"pantone-buttons-taro","name":"Taro","range":"Pantone matte","family":"Purple and lilac"},{"id":"pantone-buttons-teddy-brown","name":"Teddy Brown","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-terracotta","name":"Terracotta","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-thai-tea","name":"Thai Tea","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-tour-yellow","name":"Tour Yellow","range":"Pantone matte","family":"Orange and yellow"},{"id":"pantone-buttons-truffle","name":"Truffle","range":"Pantone matte","family":"Brown and beige"},{"id":"pantone-buttons-viking-blue","name":"Viking Blue","range":"Pantone matte","family":"Blue"},{"id":"pantone-buttons-warm-grey-1","name":"Warm Grey 1","range":"Pantone matte","family":"Grey and black"},{"id":"pantone-buttons-warm-grey-2","name":"Warm Grey 2","range":"Pantone matte","family":"Grey and black"},{"id":"pantone-buttons-warm-grey-3","name":"Warm Grey 3","range":"Pantone matte","family":"Grey and black"},{"id":"glass-amazon","name":"Amazon","range":"Glass","family":"Green"},{"id":"glass-aquamarine","name":"Aquamarine","range":"Glass","family":"Blue"},{"id":"glass-blueberry","name":"Blueberry","range":"Glass","family":"Blue"},{"id":"glass-cloud-blue","name":"Cloud Blue","range":"Glass","family":"Blue"},{"id":"glass-golden-brown","name":"Golden Brown","range":"Glass","family":"Brown and beige"},{"id":"glass-musgravite","name":"Musgravite","range":"Glass","family":"Grey and black"},{"id":"glass-shadow-black","name":"Shadow Black","range":"Glass","family":"Grey and black"},{"id":"glass-smoke","name":"Smoke","range":"Glass","family":"Grey and black"},{"id":"colony-atomic","name":"Atomic","range":"Colony","family":"Orange and yellow"},{"id":"colony-black-pearl","name":"Black Pearl","range":"Colony","family":"Grey and black"},{"id":"colony-blue-jeans","name":"Blue Jeans","range":"Colony","family":"Blue"},{"id":"colony-blue-moon","name":"Blue Moon","range":"Colony","family":"Blue"},{"id":"colony-colony-burgundy","name":"Burgundy","range":"Colony","family":"Red and pink"},{"id":"colony-earl-grey","name":"Earl Grey","range":"Colony","family":"Grey and black"},{"id":"colony-lava","name":"Lava","range":"Colony","family":"Red and pink"},{"id":"colony-midnight-teal","name":"Midnight Teal","range":"Colony","family":"Blue"},{"id":"colony-orchid","name":"Orchid","range":"Colony","family":"Purple and lilac"},{"id":"colony-seafoam","name":"Seafoam","range":"Colony","family":"Green"},{"id":"colony-uovo","name":"Uovo","range":"Colony","family":"White and cream"},{"id":"colony-walnut","name":"Walnut","range":"Colony","family":"Brown and beige"},{"id":"colony-washed-green","name":"Washed Green","range":"Colony","family":"Green"},{"id":"colony-yuzu","name":"Yuzu","range":"Colony","family":"Orange and yellow"},{"id":"blends-bun","name":"Bun","range":"Blends","family":"Brown and beige"},{"id":"blends-light-clay","name":"Light Clay","range":"Blends","family":"Brown and beige"},{"id":"blends-linen","name":"Linen","range":"Blends","family":"White and cream"},{"id":"blends-olympus-white","name":"Olympus White","range":"Blends","family":"White and cream"},{"id":"blends-pine-forest","name":"Pine Forest","range":"Blends","family":"Green"},{"id":"blends-rich-olive","name":"Rich Olive","range":"Blends","family":"Green"},{"id":"blends-sea-salt","name":"Sea Salt","range":"Blends","family":"White and cream"},{"id":"blends-watery","name":"Watery","range":"Blends","family":"Blue"},{"id":"din-coast-stone","name":"Coast Stone","range":"DIN","family":"Brown and beige"},{"id":"din-ivory-black","name":"Ivory Black","range":"DIN","family":"Grey and black"},{"id":"din-neophrite","name":"Nephrite","range":"DIN","family":"Grey and black"},{"id":"din-sea-smoke","name":"Sea Smoke","range":"DIN","family":"Grey and black"},{"id":"shield-shield","name":"Shield White","range":"Shield","family":"White and cream"}],"formats":[{"id":"4-by-4-r","name":"4 by 4 R","group":"square","tile":"100 x 100 mm","sheet":"310 x 310 mm"},{"id":"4-by-4-b","name":"4 by 4 B","group":"square","tile":"100 x 100 mm","sheet":"310 x 360 mm"},{"id":"2-by-2","name":"2 by 2","group":"square","tile":"50 x 50 mm","sheet":"316.5 x 316.5 mm"},{"id":"6-by-6","name":"6 by 6","group":"single","tile":"150 x 150 mm","sheet":""},{"id":"one","name":"One","group":"square","tile":"25 x 25 mm","sheet":"301 x 301 mm"},{"id":"one-b","name":"One B","group":"square","tile":"25 x 25 mm","sheet":"273 x 314 mm"},{"id":"sd-bars-r","name":"SD Bars R","group":"bars","tile":"20 x 65 mm","sheet":"314 x 337 mm"},{"id":"sd-bars-b","name":"SD Bars B","group":"bars","tile":"20 x 65 mm","sheet":"303 x 313 mm"},{"id":"sd-bars-h","name":"SD Bars H","group":"bars","tile":"20 x 65 mm","sheet":"300 x 365 mm"},{"id":"sd-bars-w","name":"SD Bars W","group":"bars","tile":"20 x 65 mm","sheet":"348 x 348 mm"},{"id":"bars-b","name":"Bars B","group":"bars","tile":"14.2 x 100 mm","sheet":"340 x 306 mm"},{"id":"bars","name":"Bars","group":"bars","tile":"14.2 x 100 mm","sheet":"340 x 306 mm"},{"id":"bars-h","name":"Bars H","group":"bars","tile":"14.2 x 100 mm","sheet":"300 x 360 mm"},{"id":"1-by-4","name":"1 by 4","group":"subway","tile":"25 x 100 mm","sheet":"306 x 315 mm"},{"id":"1-by-4-brick","name":"1 by 4 Brick","group":"subway","tile":"25 x 100 mm","sheet":"345 x 340 mm"},{"id":"1-by-4-h","name":"1 by 4 H","group":"subway","tile":"25 x 100 mm","sheet":"303 x 350 mm"},{"id":"1-by-4-flute","name":"1 by 4 Flute","group":"subway","tile":"25 x 100 mm","sheet":"306 x 315 mm"},{"id":"flat-serpent","name":"Flat Serpent","group":"bars","tile":"32 x 135 mm","sheet":"330 x 336 mm"},{"id":"serpent-04","name":"Serpent 04","group":"bars","tile":"32 x 135 mm","sheet":"330 x 293 mm"},{"id":"serpent-05","name":"Serpent 05","group":"bars","tile":"32 x 135 mm","sheet":"212 x 284 mm"},{"id":"serpent-06","name":"Serpent 06","group":"bars","tile":"32 x 135 mm","sheet":"266 x 266 mm"},{"id":"serpent-segment","name":"Serpent Segment","group":"bars","tile":"32 x 135 mm","sheet":"330 x 290 mm"},{"id":"serpent-3d","name":"Serpent 3D","group":"bars","tile":"32 x 135 mm","sheet":"330 x 290 mm"},{"id":"2-by-4-r","name":"2 by 4 R","group":"subway","tile":"50 x 100 mm","sheet":"312 x 320 mm"},{"id":"2-by-4-b","name":"2 by 4 B","group":"subway","tile":"50 x 100 mm","sheet":"320 x 364 mm"},{"id":"2-by-6","name":"2 by 6","group":"subway","tile":"50 x 150 mm","sheet":"308 x 320 mm"},{"id":"2-by-6-b","name":"2 by 6 B","group":"subway","tile":"50 x 150 mm","sheet":"320 x 378 mm"},{"id":"2-by-8","name":"2 by 8","group":"single","tile":"50 x 200 mm","sheet":""},{"id":"2-by-8-arc","name":"2 by 8 Arc","group":"single","tile":"50 x 200 mm","sheet":""},{"id":"ruler","name":"Ruler","group":"single","tile":"40 x 250 mm","sheet":""},{"id":"wave","name":"Wave","group":"shaped","tile":"25 x 50 mm","sheet":"270 x 335 mm"},{"id":"retro","name":"Retro","group":"shaped","tile":"25 x 50 mm","sheet":"290 x 337 mm"},{"id":"profile","name":"Profile","group":"shaped","tile":"25 x 50 mm","sheet":"247 x 304 mm"},{"id":"diamond","name":"Diamond","group":"shaped","tile":"25 x 50 mm","sheet":"260 x 340 mm"},{"id":"punkah","name":"Punkah","group":"shaped","tile":"25 x 50 mm","sheet":"340 x 290 mm"},{"id":"galactic","name":"Galactic","group":"shaped","tile":"25 x 50 mm","sheet":"195 x 225 mm"},{"id":"truss","name":"Truss","group":"shaped","tile":"25 x 50 mm","sheet":"260 x 340 mm"},{"id":"2-gable","name":"Gable 50 mm","group":"square","tile":"50 x 50 mm","sheet":"315 x 315 mm"},{"id":"1-gable","name":"Gable 25 mm","group":"square","tile":"25 x 25 mm","sheet":"306 x 306 mm"},{"id":"1-gable-bc","name":"Gable 25 mm BC","group":"square","tile":"25 x 25 mm","sheet":"314 x 314 mm"},{"id":"buttons-r","name":"Buttons R","group":"shaped","tile":"10 x 10 mm","sheet":"310 x 310 mm"},{"id":"buttons-b","name":"Buttons B","group":"shaped","tile":"10 x 10 mm","sheet":"316 x 315 mm"},{"id":"buttons-leaf","name":"Buttons Leaf","group":"shaped","tile":"10 x 10 mm","sheet":"280 x 190 mm"},{"id":"buttons-snow","name":"Buttons Snow","group":"shaped","tile":"10 x 10 mm","sheet":"296 x 296 mm"},{"id":"buttons-morrocco","name":"Buttons Morrocco","group":"shaped","tile":"10 x 10 mm","sheet":"255 x 300 mm"},{"id":"brooch-r","name":"Brooch R","group":"shaped","tile":"20 x 20 mm","sheet":"285 x 320 mm"},{"id":"wings-a","name":"Wings A","group":"bars","tile":"17 x 100 mm","sheet":"310 x 334 mm"},{"id":"wings-r","name":"Wings R","group":"bars","tile":"17 x 100 mm","sheet":"310 x 360 mm"},{"id":"wings-c","name":"Wings C","group":"bars","tile":"17 x 100 mm","sheet":"310 x 370 mm"},{"id":"wings-p","name":"Wings P","group":"bars","tile":"17 x 100 mm","sheet":"305 x 380 mm"},{"id":"wings-s","name":"Wings S","group":"bars","tile":"17 x 100 mm","sheet":"292 x 385 mm"},{"id":"ocelli-r","name":"Ocelli R","group":"shaped","tile":"28.5 x 58 mm","sheet":"355 x 355 mm"},{"id":"ocelli-b","name":"Ocelli B","group":"shaped","tile":"28.5 x 58 mm","sheet":"280 x 335 mm"},{"id":"ocelli-c","name":"Ocelli C","group":"shaped","tile":"28.5 x 58 mm","sheet":"260 x 325 mm"},{"id":"honey-bee","name":"Honey Bee","group":"shaped","tile":"76 x 88 mm","sheet":"295 x 317 mm"},{"id":"lantern","name":"Lantern","group":"single","tile":"100 x 170 mm","sheet":""},{"id":"rocca","name":"Rocca","group":"shaped","tile":"100 x 150 mm","sheet":"200 x 300 mm"},{"id":"rhombus","name":"Rhombus","group":"single","tile":"100 x 170 mm","sheet":""},{"id":"bubble","name":"Bubble","group":"shaped","tile":"","sheet":"300 x 300 mm"},{"id":"dash-line","name":"Dash Line","group":"shaped","tile":"","sheet":"310 x 325 mm"},{"id":"plus","name":"Plus","group":"shaped","tile":"","sheet":"320 x 320 mm"},{"id":"shuriken","name":"Shuriken","group":"shaped","tile":"","sheet":"338 x 338 mm"},{"id":"quarter-round","name":"Quarter Round","group":"trims","tile":"30 x 100 mm","sheet":""},{"id":"outside-corner","name":"Outside Corner","group":"trims","tile":"30 x 30 mm","sheet":""}]};
+(function(){
+  var MAX=4, EMAIL="sales@middleearthtiles.co.nz";
+  var Q=new URLSearchParams(location.search);
+  var API=(Q.get("api")||"https://web-production-d7c2c.up.railway.app").replace(/\/+$/,"");
+  var RANGES=["Candy gloss","Pantone matte","Glass","Colony","Blends","DIN","Shield"];
+  var FAMILIES=[["White and cream","#F2EDE2"],["Grey and black","#6E6E6E"],["Brown and beige","#9A6B4A"],["Red and pink","#C8485A"],["Orange and yellow","#E3A33A"],["Green","#5E8F5A"],["Blue","#3F6FA8"],["Purple and lilac","#7D5C9C"]];
+  var GROUPS=[["single","Single tiles"],["subway","Subway and brick"],["bars","Bars and fine strips"],["square","Square mosaics"],["shaped","Shaped mosaics"],["trims","Trims and edges"]];
+  var GROUP_ICON={single:"2-by-8",subway:"2-by-6",bars:"bars",square:"2-by-2",shaped:"wave",trims:"quarter-round"};
+  function $(id){return document.getElementById(id);}
+  function slug(s){return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}
+  var C={},F={}; DATA.colours.forEach(function(c){C[c.id]=c;}); DATA.formats.forEach(function(f){F[f.id]=f;});
+  function swatch(c){return "sw/"+c.id+".webp";}
+  function sketch(f){return "f/"+f.id+".png";}
+  function fsize(f){return f.tile?("Tile "+f.tile+(f.sheet?", sheet "+f.sheet:", loose tiles")):(f.sheet?"Sheet "+f.sheet:"");}
+
+  // ---- filters ----
+  var fRange="", fFam="";
+  var qr=Q.get("range"); RANGES.forEach(function(r){if(qr&&slug(r).indexOf(slug(qr))===0)fRange=r;});
+  var qf=Q.get("colour")||Q.get("family"); FAMILIES.forEach(function(f){if(qf&&slug(f[0]).indexOf(slug(qf))===0)fFam=f[0];});
+  function chip(label,on,dot){var b=document.createElement("button");b.type="button";b.className="chip";b.setAttribute("aria-pressed",on?"true":"false");b.innerHTML=(dot?'<i style="background:'+dot+'"></i>':"")+"<span></span>";b.querySelector("span").textContent=label;return b;}
+  function buildFilters(){
+    var rr=$("ranges"),ff=$("families");
+    while(rr.children.length>1)rr.removeChild(rr.lastChild); while(ff.children.length>1)ff.removeChild(ff.lastChild);
+    var a=chip("All ranges",!fRange); a.onclick=function(){fRange="";buildFilters();draw();}; rr.appendChild(a);
+    RANGES.forEach(function(r){if(!DATA.colours.some(function(c){return c.range===r;}))return; var b=chip(r,fRange===r); b.onclick=function(){fRange=(fRange===r?"":r);buildFilters();draw();}; rr.appendChild(b);});
+    var a2=chip("All colours",!fFam); a2.onclick=function(){fFam="";buildFilters();draw();}; ff.appendChild(a2);
+    FAMILIES.forEach(function(f){var b=chip(f[0],fFam===f[0],f[1]); b.onclick=function(){fFam=(fFam===f[0]?"":f[0]);buildFilters();draw();}; ff.appendChild(b);});
+  }
+  function draw(){
+    var g=$("grid"); g.innerHTML=""; var n=0;
+    DATA.colours.forEach(function(c){
+      if(fRange&&c.range!==fRange)return; if(fFam&&c.family!==fFam)return; n++;
+      var b=document.createElement("button"); b.type="button"; b.className="card"; b.dataset.id=c.id;
+      b.innerHTML='<img loading="lazy" alt=""><span class="nm"></span><span class="rg"></span><span class="tick">&#10003;</span>';
+      var im=b.querySelector("img"); im.src=swatch(c); im.alt="Iris "+c.name+", "+c.range+" glazed tile swatch";
+      b.querySelector(".nm").textContent=c.name; b.querySelector(".rg").textContent=c.range;
+      b.onclick=function(){toggle(c.id);}; g.appendChild(b);
+    });
+    $("count").textContent=n+" colour"+(n===1?"":"s")+" shown";
+    refresh();
+  }
+
+  // ---- format chosen on the Iris page (?format=2-by-6) ----
+  var preFormat=F[slug(Q.get("format"))]||null;
+  if(preFormat){var bn=$("banner"); bn.classList.add("on"); bn.innerHTML='<img alt=""><div><b></b><br><small></small></div>'; bn.querySelector("img").src=sketch(preFormat); bn.querySelector("img").alt=preFormat.name+" format drawing"; bn.querySelector("b").textContent="Format: "+preFormat.name; bn.querySelector("small").textContent=fsize(preFormat)+". Every colour you pick will be set to this format. You can change it before you send.";}
+
+  // ---- picking ----
+  var picked=[]; // {id, group, format}
+  var preColour=C[slug(Q.get("pick"))];
+  function idx(id){for(var i=0;i<picked.length;i++)if(picked[i].id===id)return i;return -1;}
+  function toggle(id){
+    var i=idx(id);
+    if(i>=0)picked.splice(i,1);
+    else{ if(picked.length>=MAX){alert("You can choose up to "+MAX+" colours. Remove one to add another.");return;}
+      picked.push({id:id,group:preFormat?preFormat.group:"",format:preFormat?preFormat.id:""}); }
+    refresh();
+  }
+  function refresh(){
+    document.querySelectorAll(".card").forEach(function(c){c.classList.toggle("picked",idx(c.dataset.id)>=0);});
+    $("bar").classList.toggle("on",picked.length>0);
+    $("cnt").textContent=picked.length+" of "+MAX+" chosen";
+    var m=$("mini"); m.innerHTML=""; picked.forEach(function(p){var im=document.createElement("img"); im.src=swatch(C[p.id]); im.alt=C[p.id].name; m.appendChild(im);});
+  }
+
+  function renderPicks(){
+    var box=$("picks"); box.innerHTML="";
+    picked.forEach(function(p){
+      var c=C[p.id], r=document.createElement("div"); r.className="pick";
+      r.innerHTML='<div class="phead"><img alt=""><div><b></b><small></small></div><button class="x" type="button" aria-label="Remove">&times;</button></div><div class="fmt"><p class="q">Which format do you have in mind?</p><div class="groups"></div><div class="fgrid"></div><div class="chosen"></div></div>';
+      r.querySelector("img").src=swatch(c); r.querySelector("img").alt="Iris "+c.name;
+      r.querySelector("b").textContent=c.name; r.querySelector("small").textContent=c.range;
+      var gbox=r.querySelector(".groups"), fg=r.querySelector(".fgrid"), ch=r.querySelector(".chosen");
+      function paint(){
+        gbox.innerHTML="";
+        GROUPS.forEach(function(g){var b=chip(g[1],p.group===g[0]); var ic=document.createElement("img"); ic.src="f/"+GROUP_ICON[g[0]]+".png"; ic.alt=""; b.insertBefore(ic,b.firstChild); b.onclick=function(){p.group=(p.group===g[0]?"":g[0]); if(p.format&&F[p.format].group!==p.group)p.format=""; paint(); renderGuide();}; gbox.appendChild(b);});
+        var ns=chip("Not sure yet",!p.group&&!p.format); ns.onclick=function(){p.group="";p.format="";paint();renderGuide();}; gbox.appendChild(ns);
+        fg.innerHTML="";
+        if(p.group){
+          DATA.formats.filter(function(f){return f.group===p.group;}).forEach(function(f){
+            var b=document.createElement("button"); b.type="button"; b.className="fbtn"; b.setAttribute("aria-pressed",p.format===f.id?"true":"false");
+            b.innerHTML='<img alt="" loading="lazy"><b></b><small></small>'; b.querySelector("img").src=sketch(f); b.querySelector("img").alt=f.name+" format drawing";
+            b.querySelector("b").textContent=f.name; b.querySelector("small").textContent=f.tile||f.sheet||"";
+            b.onclick=function(){p.format=(p.format===f.id?"":f.id); paint(); renderGuide();}; fg.appendChild(b);
+          });
+        }
+        ch.textContent=p.format?("Chosen: "+F[p.format].name+". "+fsize(F[p.format])+"."):(p.group?"Tap a format above, or leave it and we will help you choose.":"");
+      }
+      paint();
+      r.querySelector(".x").onclick=function(){toggle(p.id); if(!picked.length){closeOv();return;} renderPicks(); renderGuide();};
+      box.appendChild(r);
+    });
+  }
+  var guideTimer=null;
+  function payloadPicks(){return picked.map(function(p){return {id:p.id,format:p.format,group:p.group};});}
+  function renderGuide(){
+    clearTimeout(guideTimer);
+    guideTimer=setTimeout(function(){
+      var g=$("guide"); g.innerHTML='<p class="hint">Making your sample guide...</p>';
+      fetch(API+"/iris/sample-card",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({picks:payloadPicks()})})
+        .then(function(r){if(!r.ok)throw 0;return r.blob();})
+        .then(function(b){var u=URL.createObjectURL(b),im=document.createElement("img"); im.className="cardimg"; im.alt="Your Iris sample guide"; im.src=u; im.onclick=function(){openFull(u);}; g.innerHTML=""; g.appendChild(im);})
+        .catch(function(){g.innerHTML='<p class="hint">Your sample guide could not be shown just now. We will still email it to you with your request.</p>';});
+    },400);
+  }
+  function openFull(u){var o=document.createElement("div"); o.className="fullguide"; o.innerHTML='<div class="fgbar"><button type="button" class="btn">Close</button></div><img alt="Your sample guide, full size">'; o.querySelector("img").src=u; o.querySelector("button").onclick=function(){o.parentNode.removeChild(o);}; document.body.appendChild(o);}
+  function openOv(){ $("step1").hidden=false; $("done").hidden=true; $("msg").textContent=""; renderPicks(); renderGuide(); $("ov").classList.add("on"); $("ov").scrollTop=0; }
+  function closeOv(){ $("ov").classList.remove("on"); }
+  $("go").onclick=openOv; $("back").onclick=closeOv;
+  $("close").onclick=function(){picked=[]; refresh(); closeOv(); $("sform").reset();};
+  $("send").onclick=function(){
+    var f=$("sform"), d={}; new FormData(f).forEach(function(v,k){d[k]=v;});
+    var need=[["name","your name"],["email","your email"],["phone","your phone number"],["address","a delivery address"],["project","what the project is"],["where","where the tiles will go"]];
+    for(var i=0;i<need.length;i++){ if(!(d[need[i][0]]||"").trim()){ $("msg").textContent="Please add "+need[i][1]+"."; return; } }
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email.trim())){ $("msg").textContent="Please check your email address."; return; }
+    d.picks=payloadPicks();
+    $("send").disabled=true; $("msg").textContent="Sending...";
+    fetch(API+"/iris/sample-request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})
+      .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+      .then(function(x){
+        $("send").disabled=false;
+        if(!x.ok||!x.j.ok){ $("msg").textContent=(x.j&&x.j.error)||("Something went wrong. Please email "+EMAIL+"."); return; }
+        $("step1").hidden=true; $("done").hidden=false;
+        $("doneText").textContent=x.j.sent===false?"We have your request and will be in touch shortly. Your confirmation email may take a little longer than usual.":"We have emailed you a copy with your sample guide. We will be in touch shortly to confirm when your samples are on their way.";
+      })
+      .catch(function(){ $("send").disabled=false; $("msg").textContent="We could not send that just now. Please try again, or email "+EMAIL+"."; });
+  };
+
+  buildFilters(); draw();
+  if(preColour){toggle(preColour.id);}
+})();
+</script>
+</body>
+</html>

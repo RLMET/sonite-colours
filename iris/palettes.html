@@ -9,7 +9,7 @@
   html,body{margin:0;background:transparent}
   body{font-family:Aptos,"Segoe UI",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:#464330}
   .wrap{padding:4px 4px 8px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;justify-content:center}
   .more{display:none;margin-top:10px}
   .open .more{display:grid;animation:in .35s ease}
   @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -53,6 +53,16 @@ var PALETTES = {"greens": {"now": ["glass-amazon", "candy-moss", "candy-otter-gr
   if(P.more.length){P.more.forEach(function(id){add(document.getElementById("more"),id);});}
   else{w.classList.add("solo");}
   if(solo){w.classList.add("open","solo"); var hd=document.createElement("h1"); hd.textContent="Iris "+P.label+" ("+(P.now.length+P.more.length)+")"; hd.style.cssText="font-size:1.4rem;margin:8px 4px 16px"; w.insertBefore(hd,w.firstChild);}
+  // Balance the rows: same number of swatches on each row where possible (14 = 7 + 7, not 10 + 4)
+  function layout(){
+    var open=w.classList.contains("open"), n=P.now.length+(open?P.more.length:0);
+    var W=w.clientWidth-8, narrow=window.innerWidth<=520, gap=narrow?4:10, min=narrow?90:110;
+    var maxCols=Math.max(1,Math.min(narrow?3:8,Math.floor((W+gap)/(min+gap))));
+    var rows=Math.ceil(n/maxCols), cols=Math.ceil(n/rows);
+    ["now","more"].forEach(function(id){document.getElementById(id).style.gridTemplateColumns="repeat("+cols+",minmax(0,"+Math.floor((W-gap*(maxCols-1))/maxCols)+"px))";});
+    w.style.setProperty("--cols",cols);
+  }
+  layout();
   var SHOW="Show all "+total+" "+P.label, LESS="Show fewer";
   lab.textContent=SHOW;
 
@@ -61,13 +71,13 @@ var PALETTES = {"greens": {"now": ["glass-amazon", "candy-moss", "candy-otter-gr
   function send(collapsed){ if(!top)return; var h=Math.ceil(w.getBoundingClientRect().height)+2;
     try{window.parent.postMessage({met:"iris-palette",set:key,h:h,collapsed:!!collapsed},"*");}catch(e){} }
   window.addEventListener("message",function(e){ if(e.data&&e.data.met==="iris-ack"&&e.data.set===key){acked=true;} });
-  window.addEventListener("resize",function(){send();});
+  window.addEventListener("resize",function(){layout();send();});
   send(); setTimeout(send,300);
 
   btn.onclick=function(){
     if(top&&!acked){ window.top.location.href=BASE+"palettes.html?set="+encodeURIComponent(key)+"&all=1"; return; }
     var open=!w.classList.contains("open"); w.classList.toggle("open",open);
-    btn.setAttribute("aria-expanded",open?"true":"false"); lab.textContent=open?LESS:SHOW; send(!open);
+    btn.setAttribute("aria-expanded",open?"true":"false"); lab.textContent=open?LESS:SHOW; layout(); send(!open);
   };
 })();
 </script>

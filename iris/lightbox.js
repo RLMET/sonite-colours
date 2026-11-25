@@ -27,7 +27,7 @@
   }
 
   function caption(img) {
-    var item = img.closest('.grid-gallery-item, li, figure, [class*="item"]');
+    var item = img.closest('.grid-gallery__item-container');
     var t = item ? item.innerText.replace(/\s+/g, ' ').trim() : '';
     return t.length > 60 ? '' : t;
   }
@@ -41,7 +41,7 @@
     '.met-lb .x{top:12px;right:12px}' +
     '.met-lb .p{left:10px;top:50%;margin-top:-22px}.met-lb .n{right:10px;top:50%;margin-top:-22px}' +
     '.met-lb .c{position:absolute;left:0;right:0;bottom:14px;text-align:center;color:#fff;font:15px/1.3 Arial,sans-serif;padding:0 60px}' +
-    '.grid-gallery-block img,.block--picture img{cursor:zoom-in}';
+    '.grid-gallery__item-container,.block--picture img{cursor:zoom-in}';
   document.head.appendChild(css);
 
   var box, im, cap, list = [], idx = 0, pushed = false;
@@ -108,8 +108,18 @@
 
   document.addEventListener('click', function (e) {
     if (document.querySelector('.blockEditMode')) return; // not in the RocketSpark editor
-    var img = e.target.closest && e.target.closest(SEL);
-    if (!img || img.closest('a')) return;
+    var t = e.target, img = null;
+    if (!t.closest) return;
+    var item = t.closest('.grid-gallery__item-container');
+    if (item && item.closest('.grid-gallery-block')) {
+      var link = item.querySelector('a[href]');
+      if (link && link.getAttribute('href')) return; // a photo given a real link keeps it
+      img = item.querySelector('img');
+    } else {
+      img = t.closest(SEL);
+      if (img) { var a = img.closest('a'); if (a && a.getAttribute('href')) return; }
+    }
+    if (!img) return;
     e.preventDefault();
     e.stopPropagation();
     open(img);
